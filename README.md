@@ -15,3 +15,4 @@ Full-stack tech-commerce platform.
 - [x] Initialized architecture and cleared boilerplate
 - [x] Configured premium global theme and typography
 - [x] Created responsive navigation with glassmorphism layout
+- [x] Implemented responsive Hero section with responsive text and optimized image framing
