@@ -17,3 +17,4 @@ Full-stack tech-commerce platform.
 - [x] Created responsive navigation with glassmorphism layout
 - [x] Implemented responsive Hero section with responsive text and optimized image framing
 - [x] Created product interfaces, dummy dataset schemas, and dynamic hover-responsive Product Cards
+- [x] Developed responsive Footer layout and implemented core ShopwithUs storefront section
