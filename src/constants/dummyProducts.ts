@@ -95,3 +95,35 @@ export const dummyShopProducts: Product[] = [
     category: "Streetwear",
   },
 ];
+
+export interface DetailedProduct {
+  id: string;
+  name: string;
+  price: number;
+  category: string;
+  description: string;
+  images: string[];
+  sizes: string[];
+  colors: { name: string; value: string }[];
+}
+
+export const singleProductDetail: DetailedProduct = {
+  id: "prod-02",
+  name: "Vintage Canvas Utility Outerwear",
+  price: 89.5,
+  category: "Streetwear",
+  description:
+    "Constructed from heavyweight washed canvas duck fabric, complete with structured architectural welt drops and micro-brushed seams. Engineered for long-term resource durability and fluid layering across seasonal shifts.",
+  images: [
+    "/images/product-vintage-orange-jacket-01.jpg",
+    "/images/product-vintage-orange-jacket-02.jpg",
+    "/images/shop-vintage-denim-jacket-01.jpg",
+    "/images/shop-vintage-denim-jacket-02.jpg",
+  ],
+  sizes: ["S", "M", "L", "XL"],
+  colors: [
+    { name: "Obsidian", value: "#121214" },
+    { name: "Russet Orange", value: "#c25e25" },
+    { name: "Slate Muted", value: "#64748b" },
+  ],
+};

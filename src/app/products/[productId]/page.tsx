@@ -1,7 +1,15 @@
 import FrontEndLayout from "@/components/layout/FrontEndLayout";
 import ProductPageComponent from "@/components/products/ProductPageComponent";
 
-export default function page() {
+interface PageProps {
+  params: Promise<{
+    productId: string;
+  }>;
+}
+
+export default async function DynamicProductPage({ params }: PageProps) {
+  const { productId } = await params;
+
   return (
     <FrontEndLayout>
       <ProductPageComponent />

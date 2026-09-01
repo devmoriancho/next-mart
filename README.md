@@ -20,3 +20,5 @@ Full-stack tech-commerce platform.
 - [x] Developed responsive Footer layout and implemented core ShopwithUs storefront section
 - [x] Engineered responsive Shop catalog view with responsive filtering sidebars and customized sorting options
 - [x] Architected semantic About brand narrative view integrating fluid aspect-ratio image layouts and unique system metrics
+- [x] Implemented dynamic route parameter processing for product profiles and decoupled interactive thumbnail gallery state handlers
+- [x] Built reusable breadcrumb navigation and modular tactile button utility components
