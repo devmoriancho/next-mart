@@ -23,3 +23,4 @@ Full-stack tech-commerce platform.
 - [x] Implemented dynamic route parameter processing for product profiles and decoupled interactive thumbnail gallery state handlers
 - [x] Built reusable breadcrumb navigation and modular tactile button utility components
 - [x] Implemented React Hook Form with Zod validation contracts for secure client-side user authentication workflows
+- [x] Engineered functional Sign-In route workflow encapsulated in the global application layout grid, utilizing type-safe Zod credentials parsing

@@ -18,4 +18,13 @@ export const signupSchema = z.object({
     .regex(/[0-9]/, "Password must contain at least one number"),
 });
 
+export const signinSchema = z.object({
+  email: z
+    .string()
+    .min(1, "Email address is required")
+    .email("Please enter a valid email address"),
+  password: z.string().min(1, "Password is required"),
+});
+
 export type SignupInput = z.infer<typeof signupSchema>;
+export type SigninInput = z.infer<typeof signinSchema>;
