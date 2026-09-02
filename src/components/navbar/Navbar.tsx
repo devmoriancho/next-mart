@@ -62,7 +62,7 @@ export default function Navbar() {
           </button>
           <button
             className="rounded-full p-2 text-foreground transition-all duration-200 hover:bg-surface hover:scale-105 active:scale-95"
-            onClick={() => router.push("/sign-in")}
+            onClick={() => router.push("/signin")}
           >
             <FaRegUser size={19} />
           </button>
