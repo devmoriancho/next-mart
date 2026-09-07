@@ -66,7 +66,7 @@ export default function ContactPage() {
 
               <div className="flex items-center gap-4 text-sm font-medium text-muted-foreground">
                 <FiPhone size={18} className="text-accent" />
-                <span>+254 701 234 567</span>
+                <span>+254 712 376 198</span>
               </div>
 
               <div className="flex items-start gap-4 text-sm font-medium text-muted-foreground">

@@ -141,33 +141,33 @@ export default function OrderPage() {
           <div className="space-y-6 lg:sticky lg:top-24 lg:h-fit">
             <div className="rounded-2xl border border-border p-6 bg-surface/10">
               <h2 className="text-base font-bold uppercase tracking-wider text-foreground border-b border-border pb-4">
-                Financial Ledger
+                Order Summary
               </h2>
 
               <div className="mt-6 space-y-3.5 text-sm font-medium text-muted-foreground">
                 <div className="flex justify-between">
-                  <span>Subtotal Baseline</span>
+                  <span>Subtotal</span>
                   <span className="text-foreground">
                     ${order.subtotal.toFixed(2)}
                   </span>
                 </div>
 
                 <div className="flex justify-between">
-                  <span>Logistics / Freight</span>
+                  <span>Shipping</span>
                   <span className="text-success uppercase font-bold text-xs tracking-wider">
-                    Free Route
+                    Free
                   </span>
                 </div>
 
                 <div className="flex justify-between">
-                  <span>Sartorial Duty Tax</span>
+                  <span>Tax</span>
                   <span className="text-foreground">
                     ${order.tax.toFixed(2)}
                   </span>
                 </div>
 
                 <div className="flex justify-between border-t border-border pt-4 text-lg font-black text-foreground">
-                  <span>Gross Remittance</span>
+                  <span>Total</span>
                   <span className="text-accent">${order.total.toFixed(2)}</span>
                 </div>
               </div>

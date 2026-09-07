@@ -32,7 +32,7 @@ export default function SignupPage() {
               Create an Account
             </h1>
             <p className="mt-2 text-sm text-muted-foreground">
-              Join NexusMart today and explore premium collections.
+              Join NexusMart today and start shopping.
             </p>
           </div>
 

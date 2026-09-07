@@ -100,7 +100,7 @@ export default function OrdersPage() {
                   </div>
 
                   <div className="col-span-2 sm:col-span-1">
-                    <p className="text-muted-foreground">Logistics Timestamp</p>
+                    <p className="text-muted-foreground">Order Date</p>
                     <p className="mt-1.5 text-sm font-bold text-foreground">
                       {order.date}
                     </p>
