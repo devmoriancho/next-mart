@@ -1,52 +1,45 @@
 "use client";
 
-import React from "react";
+import React, { useMemo, useState } from "react";
 import Link from "next/link";
-import { FiPlus, FiTrash2 } from "react-icons/fi";
+import { FiEdit2, FiPlus, FiSearch, FiTrash2 } from "react-icons/fi";
 import AdminLayout from "@/components/layout/AdminLayout";
 import Button from "@/components/ui/Button";
+import { adminProducts } from "@/constants/adminData";
 
 export default function AdminProductsPage() {
-  const adminProductsList = [
-    {
-      id: "prod-01",
-      name: "Minimalist Leather Blazer",
-      image: "/images/shop-minimalist-leather-blazer.jpg",
-      category: "MINIMALIST",
-      price: 129.0,
-      stock: 45,
-      status: "Active",
-    },
-    {
-      id: "prod-02",
-      name: "Vintage Canvas Utility Outerwear",
-      image: "/images/product-vintage-orange-jacket-01.jpg",
-      category: "STREETWEAR",
-      price: 89.5,
-      stock: 28,
-      status: "Active",
-    },
-    {
-      id: "prod-03",
-      name: "Casual Knitwear Fall Sweater",
-      image: "/images/shop-casual-knitwear-fall.jpg",
-      category: "MINIMALIST",
-      price: 64.0,
-      stock: 60,
-      status: "Active",
-    },
-  ];
+  const [products, setProducts] = useState(adminProducts);
+  const [query, setQuery] = useState("");
+  const [category, setCategory] = useState("ALL");
+
+  const filteredProducts = useMemo(
+    () =>
+      products.filter((product) => {
+        const matchesQuery = product.name
+          .toLowerCase()
+          .includes(query.toLowerCase());
+        const matchesCategory =
+          category === "ALL" || product.category === category;
+        return matchesQuery && matchesCategory;
+      }),
+    [category, products, query],
+  );
+
+  const handleDelete = (id: string, name: string) => {
+    if (window.confirm(`Delete ${name}?`)) {
+      setProducts((current) => current.filter((product) => product.id !== id));
+    }
+  };
 
   return (
     <AdminLayout>
       <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-border pb-5">
         <div>
           <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">
-            Inventory Profiles
+            Products
           </h1>
           <p className="mt-1.5 text-sm font-medium text-muted-foreground">
-            Manage your catalog baseline, monitor item stock metrics, and handle
-            items.
+            Manage products, prices, stock, and availability.
           </p>
         </div>
 
@@ -60,22 +53,48 @@ export default function AdminProductsPage() {
         </Link>
       </div>
 
+      <div className="mb-5 flex flex-col gap-3 sm:flex-row">
+        <label className="relative flex-1">
+          <FiSearch
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+            size={16}
+          />
+          <input
+            aria-label="Search products"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Search products"
+            className="w-full rounded-xl border border-border bg-background py-3 pl-10 pr-4 text-sm text-foreground outline-none focus:border-accent"
+          />
+        </label>
+        <select
+          aria-label="Filter products by category"
+          value={category}
+          onChange={(event) => setCategory(event.target.value)}
+          className="rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground outline-none focus:border-accent"
+        >
+          <option value="ALL">All categories</option>
+          <option value="MINIMALIST">Minimalist</option>
+          <option value="STREETWEAR">Streetwear</option>
+        </select>
+      </div>
+
       <div className="w-full overflow-hidden rounded-2xl border border-border bg-surface/10 shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full border-collapse text-left text-sm text-foreground">
             <thead className="border-b border-border bg-surface/40 text-xs font-bold uppercase tracking-wider text-muted-foreground">
               <tr>
-                <th className="px-6 py-4">Product Target</th>
-                <th className="px-6 py-4">Classification</th>
-                <th className="px-6 py-4">Unit Price</th>
-                <th className="px-6 py-4">Stock Index</th>
+                <th className="px-6 py-4">Product</th>
+                <th className="px-6 py-4">Category</th>
+                <th className="px-6 py-4">Price</th>
+                <th className="px-6 py-4">Stock</th>
                 <th className="px-6 py-4">Status</th>
                 <th className="px-6 py-4 text-right">Actions</th>
               </tr>
             </thead>
 
             <tbody className="divide-y divide-border font-medium">
-              {adminProductsList.map((product) => (
+              {filteredProducts.map((product) => (
                 <tr
                   key={product.id}
                   className="transition-colors hover:bg-surface/20"
@@ -112,10 +131,16 @@ export default function AdminProductsPage() {
                   </td>
 
                   <td className="px-6 py-4 text-right">
+                    <Link
+                      href={`/admin/products/${product.id}/edit`}
+                      aria-label={`Edit ${product.name}`}
+                      className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-surface text-foreground hover:bg-background hover:text-accent transition cursor-pointer shadow-sm"
+                    >
+                      <FiEdit2 size={14} />
+                    </Link>
                     <button
-                      onClick={() =>
-                        console.log(`Deleting product: ${product.id}`)
-                      }
+                      onClick={() => handleDelete(product.id, product.name)}
+                      aria-label={`Delete ${product.name}`}
                       className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-surface text-destructive hover:bg-destructive/10 hover:border-destructive/20 transition cursor-pointer active:scale-95 shadow-sm"
                     >
                       <FiTrash2 size={14} />

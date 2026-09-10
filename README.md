@@ -29,3 +29,4 @@ Full-stack tech-commerce platform.
 - [x] Engineered dynamic interactive Shopping Cart module integrating mathematical summation pipelines and accessible empty state safeguards
 - [x] Engineered comprehensive checkout architecture incorporating secure financial placeholder grids and responsive sticky manifest ledgers
 - [x] Completed full back-office Admin management sub-system covering dashboard matrices, dynamic inventory sheets, interactive production forms, and order logs
+- [x] Provisioned serverless cloud PostgreSQL database via Neon and established Object-Relational Mapping (ORM) structural layers using Prisma
