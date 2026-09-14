@@ -1,15 +1,22 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FcGoogle } from "react-icons/fc";
+import { FiArrowUpRight, FiCheck } from "react-icons/fi";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
 import { signupSchema, SignupInput } from "../../../lib/validations/auth";
 import FrontEndLayout from "@/components/layout/FrontEndLayout";
+import { authClient } from "@/lib/auth-client";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
+import { signInWithGoogle } from "@/app/services/signInWithGoogle";
 
 export default function SignupPage() {
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -19,73 +26,131 @@ export default function SignupPage() {
   });
 
   const onSubmit = async (data: SignupInput) => {
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    console.log("Validated Form Submission Object:", data);
+    const { error } = await authClient.signUp.email({
+      name: data.fullName,
+      email: data.email,
+      password: data.password,
+    });
+
+    if (error) {
+      toast.error(error.message as string);
+      return;
+    }
+
+    toast.success("Registration Successful");
+    router.replace("/account");
   };
 
   return (
     <FrontEndLayout>
-      <section className="mx-auto max-w-md px-4 py-16 sm:px-6">
-        <div className="rounded-2xl border border-border bg-surface/30 p-8 shadow-xl backdrop-blur-sm">
-          <div className="text-center">
-            <h1 className="text-3xl font-extrabold tracking-tight text-foreground">
-              Create an Account
-            </h1>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Join NexusMart today and start shopping.
-            </p>
-          </div>
-
-          <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-5">
-            <Input
-              label="Full Name"
-              placeholder="John Doe"
-              type="text"
-              error={errors.fullName?.message}
-              {...register("fullName")}
-            />
-
-            <Input
-              label="Email Address"
-              placeholder="john@gmail.com"
-              type="email"
-              error={errors.email?.message}
-              {...register("email")}
-            />
-
-            <Input
-              label="Password"
-              placeholder="••••••••"
-              type="password"
-              error={errors.password?.message}
-              {...register("password")}
-            />
-
-            <div className="pt-2 space-y-3">
-              <Button type="submit" fullWidth disabled={isSubmitting}>
-                {isSubmitting ? "Creating Account..." : "Create Account"}
-              </Button>
-
-              <Button
-                type="button"
-                fullWidth
-                variant="hover"
-                leftIcon={<FcGoogle size={18} />}
-              >
-                Continue with Google
-              </Button>
+      <section className="mx-auto grid max-w-6xl overflow-hidden border-x border-border bg-card shadow-[0_24px_80px_-36px_rgba(15,23,42,0.45)] lg:grid-cols-[0.9fr_1.1fr]">
+        <div className="relative min-h-310px overflow-hidden bg-primary text-primary-foreground lg:min-h-700px">
+          <Image
+            src="/images/hero-urban-studio-pose-02.jpg"
+            alt="Editorial fashion portrait in a studio"
+            fill
+            priority
+            className="object-cover object-center opacity-75"
+            sizes="(max-width: 1024px) 100vw, 45vw"
+          />
+          <div className="absolute inset-0 bg-linear-to-t from-primary via-primary/35 to-transparent" />
+          <div className="relative flex h-full min-h-310px flex-col justify-between p-7 sm:p-10 lg:min-h-700px lg:p-12">
+            <div className="flex items-center justify-between text-xs font-bold uppercase tracking-[0.22em]">
+              <span>Nexus / 01</span>
+              <FiArrowUpRight size={20} aria-hidden="true" />
             </div>
-          </form>
+            <div className="max-w-sm">
+              <p className="mb-4 text-xs font-bold uppercase tracking-[0.22em] text-white/65">
+                Your everyday edit
+              </p>
+              <h2 className="text-4xl font-extrabold leading-[0.95] tracking-tight sm:text-5xl">
+                Make room for what feels like you.
+              </h2>
+              <p className="mt-5 max-w-xs text-sm leading-6 text-white/75">
+                Save your finds, follow every order, and keep your personal
+                style close.
+              </p>
+            </div>
+          </div>
+        </div>
 
-          <p className="mt-8 text-center text-sm text-muted-foreground">
-            Already have an account?{" "}
-            <Link
-              href="/signin"
-              className="font-semibold text-accent transition-colors hover:text-foreground hover:underline"
-            >
-              Sign In
-            </Link>
-          </p>
+        <div className="px-6 py-10 sm:px-12 sm:py-14 lg:px-16 lg:py-20">
+          <div className="max-w-md">
+            <div className="mb-10">
+              <p className="mb-3 text-xs font-bold uppercase tracking-[0.22em] text-accent">
+                Start here
+              </p>
+              <h1 className="text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl">
+                Create your account.
+              </h1>
+              <p className="mt-4 max-w-sm text-sm leading-6 text-muted-foreground">
+                A considered wardrobe starts with a considered space. Join
+                NexusMart in a few quick details.
+              </p>
+            </div>
+
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+              <Input
+                label="Full Name"
+                placeholder="John Doe"
+                type="text"
+                error={errors.fullName?.message}
+                {...register("fullName")}
+              />
+
+              <Input
+                label="Email Address"
+                placeholder="john@gmail.com"
+                type="email"
+                error={errors.email?.message}
+                {...register("email")}
+              />
+
+              <Input
+                label="Password"
+                placeholder="••••••••"
+                type="password"
+                error={errors.password?.message}
+                {...register("password")}
+              />
+
+              <div className="space-y-3 pt-3">
+                <Button type="submit" fullWidth disabled={isSubmitting}>
+                  {isSubmitting ? "Creating Account..." : "Create Account"}
+                </Button>
+
+                <Button
+                  onClick={signInWithGoogle}
+                  type="button"
+                  fullWidth
+                  variant="hover"
+                  leftIcon={<FcGoogle size={18} />}
+                >
+                  Continue with Google
+                </Button>
+              </div>
+            </form>
+
+            <div className="mt-8 border-t border-border pt-6">
+              <div className="flex flex-wrap gap-x-5 gap-y-2 text-xs font-semibold text-muted-foreground">
+                <span className="inline-flex items-center gap-1.5">
+                  <FiCheck className="text-success" /> Curated collections
+                </span>
+                <span className="inline-flex items-center gap-1.5">
+                  <FiCheck className="text-success" /> Order tracking
+                </span>
+              </div>
+              <p className="mt-6 text-sm text-muted-foreground">
+                Already have an account?{" "}
+                <Link
+                  href="/signin"
+                  className="font-bold text-accent transition-colors hover:text-foreground"
+                >
+                  Sign in <span aria-hidden="true">-&gt;</span>
+                </Link>
+              </p>
+            </div>
+          </div>
         </div>
       </section>
     </FrontEndLayout>

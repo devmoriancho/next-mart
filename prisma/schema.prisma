@@ -7,18 +7,91 @@ datasource db {
   provider = "postgresql"
 }
 
+enum Role {
+  USER
+  ADMIN
+}
+
+enum Category {
+  MEN
+  WOMEN
+  CHILDREN
+}
+
+enum ProductType {
+  T_SHIRTS
+  SHIRTS
+  HOODIES
+  JACKETS
+  JEANS
+  TROUSERS
+  SHORTS
+  SHOES
+}
+
+enum Size {
+  XS
+  S
+  M
+  L
+  XL
+  XXL
+}
+
+enum PaymentMethod {
+  STRIPE
+  CASH_ON_DELIVERY
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  CANCELLED
+}
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
 model User {
   id            String    @id @default(uuid())
   name          String
   email         String    @unique
   emailVerified Boolean   @default(false)
   image         String?
+  phone         String?
+  role          Role      @default(USER)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   sessions      Session[]
   accounts      Account[]
+  addresses     Address[]
+  orders        Order[]
 
   @@map("user")
+}
+
+model Address {
+  id          String   @id @default(uuid())
+  firstName   String
+  lastName    String
+  phone       String
+  Street      String
+  City        String
+  State       String
+  PostalCode  String?
+  isDefault   Boolean  @default(false)
+  userId      String
+  orders      Order[]
+
+  User User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("address")
 }
 
 model Session {
@@ -42,6 +115,7 @@ model Account {
   providerId            String
   accessToken           String?
   refreshToken          String?
+  idToken               String?
   accessTokenExpiresAt  DateTime?
   refreshTokenExpiresAt DateTime?
   scope                 String?
@@ -53,13 +127,108 @@ model Account {
   @@map("account")
 }
 
+
 model Verification {
   id         String    @id @default(uuid())
   identifier String
-  token      String    @unique
+  value      String    @unique
   expiresAt  DateTime
   createdAt  DateTime? @default(now())
   updatedAt  DateTime? @updatedAt
 
   @@map("verification")
+}
+
+
+
+model Product {
+  id          String         @id @default(cuid())
+  name        String
+  description String
+  price       Decimal        @db.Decimal(10, 2)
+  stock       Int            @default(0)
+  category    Category
+  productType ProductType
+  bestSeller  Boolean        @default(false)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  images      ProductImage[]
+  sizes       ProductSize[]
+  colors      ProductColor[]
+  orderItems  OrderItem[]
+
+  @@map("product")
+}
+
+model ProductImage {
+  id        String   @id @default(cuid())
+  imageUrl  String
+  publicId  String
+  productId String
+  createdAt DateTime @default(now())
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@map("productImage")
+}
+
+model ProductSize {
+  id        String   @id @default(cuid())
+  size      Size
+  productId String
+  createdAt DateTime @default(now())
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@map("productSize")
+}
+
+model ProductColor {
+  id        String   @id @default(cuid())
+  name      String
+  value     String
+  productId String
+  createdAt DateTime @default(now())
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@map("productColor")
+}
+
+model Order {
+  id             Int           @id @default(autoincrement())
+  orderNumber    String        @unique
+  stripeSessionId String?       @unique
+  subtotal       Decimal       @db.Decimal(10, 2)
+  shipping       Decimal       @db.Decimal(10, 2)
+  tax            Decimal       @db.Decimal(10, 2)
+  total          Decimal       @db.Decimal(10, 2)
+  paymentMethod  PaymentMethod
+  paymentStatus  PaymentStatus @default(PENDING)
+  status         OrderStatus   @default(PENDING)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  userId         String
+  addressId      String
+  items          OrderItem[]
+
+  user    User    @relation(fields: [userId], references: [id])
+  address Address @relation(fields: [addressId], references: [id])
+
+  @@map("order")
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  quantity  Int
+  price     Decimal @db.Decimal(10, 2)
+  size      String
+  color     String
+  orderId   Int
+  productId String
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+
+  @@map("orderItem")
 }
