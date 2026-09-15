@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { FiMapPin, FiPackage } from "react-icons/fi";
+import { FiLogOut, FiMapPin, FiPackage } from "react-icons/fi";
 import { FaUser } from "react-icons/fa6";
 import FrontEndLayout from "@/components/layout/FrontEndLayout";
 import Button from "@/components/ui/Button";
+import { logout } from "@/app/server-actions/auth/logout";
 
 export default function AccountPage() {
   return (
@@ -16,9 +17,7 @@ export default function AccountPage() {
               <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                 Full Name
               </p>
-              <p className="font-semibold text-foreground mt-1">
-                Vincent M. Parkolwa
-              </p>
+              <p className="font-semibold text-foreground mt-1">Vincent M. P</p>
             </div>
 
             <div>
@@ -26,7 +25,7 @@ export default function AccountPage() {
                 Email Address
               </p>
               <p className="font-semibold text-foreground mt-1">
-                vincent.parkolwa@nexusmart.com
+                nexusmart@gmail.com
               </p>
             </div>
 
@@ -35,7 +34,7 @@ export default function AccountPage() {
                 Phone Reference
               </p>
               <p className="font-semibold text-foreground mt-1">
-                +254 701 234 567
+                +254 712 376 198
               </p>
             </div>
 
@@ -88,6 +87,12 @@ export default function AccountPage() {
               My Purchase History
             </Button>
           </Link>
+        </div>
+
+        <div className="flex justify-center mt-4">
+          <Button onClick={logout} variant="hover" leftIcon={<FiLogOut />}>
+            Logout
+          </Button>
         </div>
       </section>
     </FrontEndLayout>

@@ -12,8 +12,19 @@ interface BaseProps {
 }
 
 export type InputProps = BaseProps &
-  Omit<InputHTMLAttributes<HTMLInputElement>, "variant"> &
-  Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, "variant">;
+  (
+    | Omit<InputHTMLAttributes<HTMLInputElement>, "variant">
+    | {
+        className?: string;
+        value?: string;
+        defaultValue?: string;
+        onChange?: React.ChangeEventHandler<HTMLTextAreaElement>;
+        name?: string;
+        placeholder?: string;
+        readOnly?: boolean;
+        required?: boolean;
+      }
+  );
 
 const Input = forwardRef<HTMLInputElement | HTMLTextAreaElement, InputProps>(
   (

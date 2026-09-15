@@ -35,3 +35,7 @@ Full-stack tech-commerce platform.
 - [x] Integrated Better Auth handlers to manage standard Email/Password accounts and live Google OAuth social handshakes
 - [x] Installed react-hot-toast alerts with a top-level global layout mounting for real-time form success and error popups
 - [x] Configured serverless connection optimizations utilizing the official Neon database driver adapters
+- [x] Implemented route guards and layout protections for auth, protected, and admin dashboard directories
+- [x] Configured admin-role authorization validations utilizing Prisma user data lookups
+- [x] Enforced type-safe prop separation within the universal Input component to isolate textbox and textarea attributes
+- [x] Upgraded Stripe API integration configurations to matching production versions

@@ -36,7 +36,7 @@ export default function CheckoutSuccessPage() {
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link href="/shop">
-            <Button variant="secondary" rightIcon={<FiArrowRight size={16} />}>
+            <Button variant="hover" rightIcon={<FiArrowRight size={16} />}>
               Continue Shopping
             </Button>
           </Link>

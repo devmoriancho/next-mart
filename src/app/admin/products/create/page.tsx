@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { FiChevronLeft, FiUpload, FiCheck } from "react-icons/fi";
+import { FiChevronLeft, FiUpload } from "react-icons/fi";
 import AdminLayout from "@/components/layout/AdminLayout";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
