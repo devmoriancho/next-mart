@@ -1,13 +1,25 @@
-"use client";
-
 import Link from "next/link";
-import { FiLogOut, FiMapPin, FiPackage } from "react-icons/fi";
+import { redirect } from "next/navigation";
+import { FiMapPin, FiPackage } from "react-icons/fi";
 import { FaUser } from "react-icons/fa6";
 import FrontEndLayout from "@/components/layout/FrontEndLayout";
 import Button from "@/components/ui/Button";
-import { logout } from "@/app/server-actions/auth/logout";
+import { getProfile } from "@/app/server-actions/user/getProfile";
 
-export default function AccountPage() {
+export default async function AccountPage() {
+  const userProfile = await getProfile();
+
+  if (!userProfile) {
+    redirect("/signin");
+  }
+
+  const defaultAddress = userProfile.addresses?.[0] || null;
+
+  const joinDate = new Date(userProfile.createdAt).toLocaleDateString("en-US", {
+    month: "long",
+    year: "numeric",
+  });
+
   return (
     <FrontEndLayout>
       <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
@@ -15,58 +27,74 @@ export default function AccountPage() {
           <div className="rounded-2xl border border-border bg-surface/20 p-6 space-y-4">
             <div>
               <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                Full Name
-              </p>
-              <p className="font-semibold text-foreground mt-1">Vincent M. P</p>
-            </div>
-
-            <div>
-              <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                Email Address
+                Name
               </p>
               <p className="font-semibold text-foreground mt-1">
-                nexusmart@gmail.com
+                {userProfile.name}
               </p>
             </div>
 
             <div>
               <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                Phone Reference
+                Email
               </p>
               <p className="font-semibold text-foreground mt-1">
-                +254 712 376 198
+                {userProfile.email}
               </p>
             </div>
 
             <div>
               <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                Member Baseline
+                Phone
               </p>
               <p className="font-semibold text-foreground mt-1">
-                September 2025
+                {userProfile.phone || "Not set"}
               </p>
+            </div>
+
+            <div>
+              <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                Joined
+              </p>
+              <p className="font-semibold text-foreground mt-1">{joinDate}</p>
             </div>
           </div>
 
           <div className="rounded-2xl border border-border bg-surface/20 p-6 flex flex-col justify-between">
             <div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 border-b border-border pb-4">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent/10 text-accent">
                   <FiMapPin size={20} />
                 </div>
-                <h2 className="text-lg font-bold tracking-tight text-foreground">
-                  Default Shipping Hub
+                <h2 className="text-base font-bold uppercase tracking-wider text-foreground">
+                  Shipping Address
                 </h2>
               </div>
 
-              <div className="mt-6 space-y-1.5 text-sm font-medium text-muted-foreground">
-                <p className="text-foreground font-semibold">
-                  Wood Avenue Towers, Box 45
-                </p>
-                <p>Kilimani District</p>
-                <p>Nairobi, 00100</p>
-                <p>Kenya</p>
-              </div>
+              {defaultAddress ? (
+                <div className="mt-5 space-y-1.5 text-sm font-medium text-muted-foreground">
+                  <p className="text-foreground font-semibold">
+                    {defaultAddress.firstName} {defaultAddress.lastName}
+                  </p>
+                  <p>{defaultAddress.phone}</p>
+                  <p className="text-foreground/80">{defaultAddress.Street}</p>
+                  <p>
+                    {defaultAddress.City}, {defaultAddress.State}
+                  </p>
+                  {defaultAddress.PostalCode && (
+                    <p>Postal Code: {defaultAddress.PostalCode}</p>
+                  )}
+                  <p className="text-xs font-bold uppercase tracking-wider mt-2 text-accent">
+                    {userProfile.country}
+                  </p>
+                </div>
+              ) : (
+                <div className="mt-8 text-center sm:text-left">
+                  <p className="text-sm font-medium text-muted-foreground">
+                    No shipping address added yet.
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -78,21 +106,15 @@ export default function AccountPage() {
               className="w-full"
               leftIcon={<FaUser size={16} />}
             >
-              Edit Profile
+              Edit Account
             </Button>
           </Link>
 
           <Link href="/account/orders" className="w-full sm:w-fit">
             <Button className="w-full" leftIcon={<FiPackage size={16} />}>
-              My Purchase History
+              Orders
             </Button>
           </Link>
-        </div>
-
-        <div className="flex justify-center mt-4">
-          <Button onClick={logout} variant="hover" leftIcon={<FiLogOut />}>
-            Logout
-          </Button>
         </div>
       </section>
     </FrontEndLayout>
