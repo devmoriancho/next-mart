@@ -7,6 +7,7 @@ export const signInWithGoogle = async () => {
       provider: "google",
     });
   } catch (error) {
+    console.error("Google sign-in failed:", error);
     toast.error("Google sign-in failed");
   }
 };
