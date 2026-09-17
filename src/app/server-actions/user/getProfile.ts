@@ -2,13 +2,12 @@
 
 import { prisma } from "@/database/db";
 import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 
 export async function getProfile() {
   try {
     const session = await auth.api.getSession({
-      headers: {
-        cookie: (await import("next/headers")).cookies().toString(),
-      },
+      headers: await headers(),
     });
 
     if (!session || !session.user) {
