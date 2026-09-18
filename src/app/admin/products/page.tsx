@@ -1,16 +1,44 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { FiEdit2, FiPlus, FiSearch, FiTrash2 } from "react-icons/fi";
 import AdminLayout from "@/components/layout/AdminLayout";
 import Button from "@/components/ui/Button";
-import { adminProducts } from "@/constants/adminData";
+import type { AdminProduct } from "@/constants/adminData";
+import { categoryValues } from "@/lib/validations/product";
 
 export default function AdminProductsPage() {
-  const [products, setProducts] = useState(adminProducts);
+  const [products, setProducts] = useState<AdminProduct[]>([]);
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("ALL");
+
+  useEffect(() => {
+    fetch("/api/products")
+      .then((response) => response.json())
+      .then((data) =>
+        setProducts(
+          data.products.map(
+            (product: {
+              id: string;
+              name: string;
+              price: string | number;
+              stock: number;
+              category: string;
+              images: { imageUrl: string }[];
+            }) => ({
+              id: product.id,
+              name: product.name,
+              image: product.images[0]?.imageUrl ?? "/images/placeholder.jpg",
+              category: product.category,
+              price: Number(product.price),
+              stock: product.stock,
+              status: "Active" as const,
+            }),
+          ),
+        ),
+      );
+  }, []);
 
   const filteredProducts = useMemo(
     () =>
@@ -25,8 +53,11 @@ export default function AdminProductsPage() {
     [category, products, query],
   );
 
-  const handleDelete = (id: string, name: string) => {
-    if (window.confirm(`Delete ${name}?`)) {
+  const handleDelete = async (id: string, name: string) => {
+    if (!window.confirm(`Delete ${name}?`)) return;
+
+    const response = await fetch(`/api/products/${id}`, { method: "DELETE" });
+    if (response.ok) {
       setProducts((current) => current.filter((product) => product.id !== id));
     }
   };
@@ -74,8 +105,11 @@ export default function AdminProductsPage() {
           className="rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground outline-none focus:border-accent"
         >
           <option value="ALL">All categories</option>
-          <option value="MINIMALIST">Minimalist</option>
-          <option value="STREETWEAR">Streetwear</option>
+          {categoryValues.map((categoryValue) => (
+            <option key={categoryValue} value={categoryValue}>
+              {categoryValue}
+            </option>
+          ))}
         </select>
       </div>
 

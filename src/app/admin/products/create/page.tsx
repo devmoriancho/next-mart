@@ -1,18 +1,60 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { FiChevronLeft, FiUpload } from "react-icons/fi";
+import { FiChevronLeft, FiTrash2, FiUpload } from "react-icons/fi";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm, useWatch } from "react-hook-form";
+import { z } from "zod";
 import AdminLayout from "@/components/layout/AdminLayout";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
+import {
+  categoryValues,
+  productSchema,
+  productTypeValues,
+  sizeValues,
+  type ProductFormValues,
+} from "@/lib/validations/product";
 
 export default function CreateProductPage() {
-  const [selectedSize, setSelectedSize] = useState("M");
+  const [selectedImages, setSelectedImages] = useState<
+    { file: File; previewUrl: string }[]
+  >([]);
   const [selectedColor, setSelectedColor] = useState("Black");
-  const [isBestSeller, setIsBestSeller] = useState(false);
+  const [message, setMessage] = useState("");
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    control,
+    formState: { errors, isSubmitting },
+  } = useForm<z.input<typeof productSchema>, unknown, ProductFormValues>({
+    resolver: zodResolver(productSchema),
+    defaultValues: {
+      category: "MEN",
+      productType: "T_SHIRTS",
+      bestSeller: false,
+      sizes: ["M"],
+      colors: [{ name: "Black", value: "#121214" }],
+      images: [],
+    },
+  });
 
-  const sizesList = ["XS", "S", "M", "L", "XL", "XXL"];
+  const selectedSizes = useWatch({ control, name: "sizes" });
+  const selectedImagesRef = useRef(selectedImages);
+
+  useEffect(() => {
+    selectedImagesRef.current = selectedImages;
+  }, [selectedImages]);
+
+  useEffect(() => {
+    return () => {
+      selectedImagesRef.current.forEach(({ previewUrl }) =>
+        URL.revokeObjectURL(previewUrl),
+      );
+    };
+  }, []);
 
   const colorsList = [
     { name: "Black", value: "#121214" },
@@ -22,9 +64,64 @@ export default function CreateProductPage() {
     { name: "Brown", value: "#8b5a2b" },
   ];
 
-  const handleCreateSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Submitting new inventory payload...");
+  const handleCreateSubmit = async (values: ProductFormValues) => {
+    setMessage("");
+    const formData = new FormData();
+    formData.append("name", values.name);
+    formData.append("description", values.description);
+    formData.append("price", String(values.price));
+    formData.append("stock", String(values.stock));
+    formData.append("category", values.category);
+    formData.append("productType", values.productType);
+    formData.append("bestSeller", String(values.bestSeller));
+    values.sizes.forEach((size) => formData.append("sizes", size));
+    values.colors.forEach((color) =>
+      formData.append("colors", JSON.stringify(color)),
+    );
+    values.images.forEach((image) => formData.append("images", image));
+
+    const response = await fetch("/api/products", {
+      method: "POST",
+      body: formData,
+    });
+    const result = await response.json();
+    setMessage(result.message);
+  };
+
+  const handleImagesSelected = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files ?? []).slice(
+      0,
+      4 - selectedImages.length,
+    );
+    const nextImages = [
+      ...selectedImages,
+      ...files.map((file) => ({
+        file,
+        previewUrl: URL.createObjectURL(file),
+      })),
+    ];
+
+    setSelectedImages(nextImages);
+    setValue(
+      "images",
+      nextImages.map(({ file }) => file),
+      { shouldValidate: true },
+    );
+    event.target.value = "";
+  };
+
+  const handleImageRemove = (index: number) => {
+    const image = selectedImages[index];
+    URL.revokeObjectURL(image.previewUrl);
+    const nextImages = selectedImages.filter(
+      (_, imageIndex) => imageIndex !== index,
+    );
+    setSelectedImages(nextImages);
+    setValue(
+      "images",
+      nextImages.map(({ file }) => file),
+      { shouldValidate: true },
+    );
   };
 
   return (
@@ -44,7 +141,10 @@ export default function CreateProductPage() {
         </p>
       </div>
 
-      <form onSubmit={handleCreateSubmit} className="space-y-6 max-w-4xl">
+      <form
+        onSubmit={handleSubmit(handleCreateSubmit)}
+        className="space-y-6 max-w-4xl"
+      >
         {/* Block 1: Product Gallery Upload Zones */}
         <div className="rounded-2xl border border-border bg-surface/20 p-6">
           <h3 className="text-xs font-bold tracking-wider text-foreground uppercase mb-1">
@@ -55,21 +155,58 @@ export default function CreateProductPage() {
           </p>
 
           <div className="grid gap-4 grid-cols-2 sm:grid-cols-4">
-            {[1, 2, 3, 4].map((index) => (
+            {[0, 1, 2, 3].map((index) => (
               <div
                 key={index}
-                className="flex aspect-3/4 w-full flex-col items-center justify-center rounded-xl border-2 border-dashed border-border bg-background/50 hover:bg-surface/30 hover:border-accent/40 transition cursor-pointer p-4 text-center group"
+                className="relative flex aspect-3/4 w-full flex-col items-center justify-center rounded-xl border-2 border-dashed border-border bg-background/50 hover:bg-surface/30 hover:border-accent/40 transition cursor-pointer p-4 text-center group"
               >
-                <FiUpload
-                  size={18}
-                  className="text-muted-foreground group-hover:text-accent transition-colors"
-                />
-                <span className="mt-2 text-[10px] font-bold text-muted-foreground tracking-wide uppercase group-hover:text-foreground">
-                  + Upload
-                </span>
+                {selectedImages[index] ? (
+                  <>
+                    <img
+                      src={selectedImages[index].previewUrl}
+                      alt={`Product preview ${index + 1}`}
+                      className="h-full w-full rounded-lg object-cover"
+                    />
+                    <button
+                      type="button"
+                      aria-label={`Remove product image ${index + 1}`}
+                      onClick={() => handleImageRemove(index)}
+                      className="absolute right-2 top-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-background/90 text-destructive shadow"
+                    >
+                      <FiTrash2 size={14} />
+                    </button>
+                  </>
+                ) : (
+                  <label
+                    htmlFor="product-images"
+                    className="flex h-full w-full cursor-pointer flex-col items-center justify-center"
+                  >
+                    <FiUpload
+                      size={18}
+                      className="text-muted-foreground group-hover:text-accent transition-colors"
+                    />
+                    <span className="mt-2 text-[10px] font-bold text-muted-foreground tracking-wide uppercase group-hover:text-foreground">
+                      + Upload
+                    </span>
+                  </label>
+                )}
               </div>
             ))}
           </div>
+          <input
+            id="product-images"
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={handleImagesSelected}
+            disabled={selectedImages.length === 4}
+            className="sr-only"
+          />
+          {errors.images && (
+            <p className="mt-2 text-xs text-destructive">
+              {errors.images.message}
+            </p>
+          )}
         </div>
 
         <div className="rounded-2xl border border-border bg-surface/20 p-6 space-y-5">
@@ -81,14 +218,16 @@ export default function CreateProductPage() {
             label="Product Title Name"
             placeholder="e.g. Vintage Canvas Utility Outerwear"
             type="text"
-            required
+            {...register("name")}
+            error={errors.name?.message}
           />
 
           <Input
             label="Product Profile Description"
             variant="textarea"
             placeholder="Describe your garment details, stitching patterns, and material properties thoroughly..."
-            required
+            {...register("description")}
+            error={errors.description?.message}
           />
         </div>
 
@@ -102,13 +241,15 @@ export default function CreateProductPage() {
               placeholder="89.50"
               type="number"
               step="0.01"
-              required
+              {...register("price", { valueAsNumber: true })}
+              error={errors.price?.message}
             />
             <Input
               label="Stock Count Quantity"
               placeholder="25"
               type="number"
-              required
+              {...register("stock", { valueAsNumber: true })}
+              error={errors.stock?.message}
             />
           </div>
 
@@ -121,10 +262,15 @@ export default function CreateProductPage() {
               <label className="text-xs font-bold tracking-wider text-muted-foreground uppercase">
                 Target Collection Segment
               </label>
-              <select className="w-full rounded-xl border border-border bg-surface/40 px-4 py-3 mt-1.5 text-sm font-medium text-foreground outline-none focus:border-accent cursor-pointer">
-                <option value="STREETWEAR">Streetwear Line</option>
-                <option value="MINIMALIST">Minimalist Clean</option>
-                <option value="ACCESSORIES">Accessories Pack</option>
+              <select
+                {...register("category")}
+                className="w-full rounded-xl border border-border bg-surface/40 px-4 py-3 mt-1.5 text-sm font-medium text-foreground outline-none focus:border-accent cursor-pointer"
+              >
+                {categoryValues.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -132,10 +278,15 @@ export default function CreateProductPage() {
               <label className="text-xs font-bold tracking-wider text-muted-foreground uppercase">
                 Product Segment Type
               </label>
-              <select className="w-full rounded-xl border border-border bg-surface/40 px-4 py-3 mt-1.5 text-sm font-medium text-foreground outline-none focus:border-accent cursor-pointer">
-                <option value="OUTERWEAR">Outerwear / Jackets</option>
-                <option value="APPAREL">Apparel / Tops</option>
-                <option value="KNITWEAR">Knitwear / Sweaters</option>
+              <select
+                {...register("productType")}
+                className="w-full rounded-xl border border-border bg-surface/40 px-4 py-3 mt-1.5 text-sm font-medium text-foreground outline-none focus:border-accent cursor-pointer"
+              >
+                {productTypeValues.map((productType) => (
+                  <option key={productType} value={productType}>
+                    {productType.replaceAll("_", " ")}
+                  </option>
+                ))}
               </select>
             </div>
           </div>
@@ -147,13 +298,21 @@ export default function CreateProductPage() {
               Available Sizes
             </h3>
             <div className="flex flex-wrap gap-2.5">
-              {sizesList.map((size) => (
+              {sizeValues.map((size) => (
                 <button
                   key={size}
                   type="button"
-                  onClick={() => setSelectedSize(size)}
+                  onClick={() =>
+                    setValue(
+                      "sizes",
+                      selectedSizes.includes(size)
+                        ? selectedSizes.filter((selected) => selected !== size)
+                        : [...selectedSizes, size],
+                      { shouldValidate: true },
+                    )
+                  }
                   className={`flex h-10 w-11 items-center justify-center rounded-lg border text-xs font-bold tracking-wider transition cursor-pointer hover:border-accent ${
-                    selectedSize === size
+                    selectedSizes.includes(size)
                       ? "border-accent bg-primary text-primary-foreground"
                       : "border-border text-foreground bg-background/40"
                   }`}
@@ -162,6 +321,11 @@ export default function CreateProductPage() {
                 </button>
               ))}
             </div>
+            {errors.sizes && (
+              <p className="mt-2 text-xs text-destructive">
+                {errors.sizes.message}
+              </p>
+            )}
           </div>
 
           <div className="rounded-2xl border border-border bg-surface/20 p-6">
@@ -174,7 +338,10 @@ export default function CreateProductPage() {
                   key={color.name}
                   type="button"
                   title={color.name}
-                  onClick={() => setSelectedColor(color.name)}
+                  onClick={() => {
+                    setSelectedColor(color.name);
+                    setValue("colors", [color], { shouldValidate: true });
+                  }}
                   className={`flex h-9 items-center gap-2 rounded-full border px-3 text-xs font-semibold tracking-wide transition cursor-pointer ${
                     selectedColor === color.name
                       ? "border-accent ring-2 ring-accent/30 bg-background/50"
@@ -189,6 +356,11 @@ export default function CreateProductPage() {
                 </button>
               ))}
             </div>
+            {errors.colors && (
+              <p className="mt-2 text-xs text-destructive">
+                {errors.colors.message}
+              </p>
+            )}
           </div>
         </div>
 
@@ -204,8 +376,7 @@ export default function CreateProductPage() {
           <label className="relative inline-flex items-center cursor-pointer select-none">
             <input
               type="checkbox"
-              checked={isBestSeller}
-              onChange={(e) => setIsBestSeller(e.target.checked)}
+              {...register("bestSeller")}
               className="sr-only peer"
             />
             <div className="w-11 h-6 bg-border peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-2px after:left-2px after:bg-white after:border-border after:border after:rounded-full after:h-5 Custom after:w-5 after:transition-all peer-checked:bg-accent" />
@@ -215,11 +386,13 @@ export default function CreateProductPage() {
         <div className="flex justify-end pt-2">
           <Button
             type="submit"
+            disabled={isSubmitting}
             className="w-full sm:w-fit sm:px-10 shadow-md shadow-primary/5"
           >
-            Publish Warehouse Item
+            {isSubmitting ? "Publishing..." : "Publish Warehouse Item"}
           </Button>
         </div>
+        {message && <p className="text-sm text-muted-foreground">{message}</p>}
       </form>
     </AdminLayout>
   );

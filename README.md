@@ -41,3 +41,10 @@ Full-stack tech-commerce platform.
 - [x] Upgraded Stripe API integration configurations to matching production versions
 - [x] Programmed Next.js Server Actions for secure customer profile retrieval and dynamic relational database table mapping
 - [x] Engineered an atomic multi-table profile edit workflow utilizing Prisma transactions, client-side input mapping, and server-cache revalidations
+- [x] Product creation with React Hook Form and Zod validation.
+- [x] Prisma enum-based categories, product types, sizes, and colors.
+- [x] Numeric price/stock normalization.
+- [x] Bestseller support.
+- [x] Cloudinary image upload, preview, and removal.
+- [x] Admin product listing, editing, and deletion.
+- [x] Server-side validation and Prisma persistence.
