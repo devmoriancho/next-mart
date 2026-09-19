@@ -16,7 +16,7 @@ interface UpdateProfilePayload {
   City: string;
   State: string;
   country: string;
-  PostalCode?: string;
+  postalCode?: string;
 }
 
 export async function updateProfile(data: UpdateProfilePayload) {
@@ -63,7 +63,7 @@ export async function updateProfile(data: UpdateProfilePayload) {
             Street: data.Street,
             City: data.City,
             State: data.State,
-            PostalCode: data.PostalCode || null,
+            PostalCode: data.postalCode || null,
           },
         });
       } else {
@@ -73,10 +73,10 @@ export async function updateProfile(data: UpdateProfilePayload) {
             firstName: data.firstName,
             lastName: data.lastName,
             phone: data.addressPhone,
-            Street: data.Street,
-            City: data.City,
-            State: data.State,
-            PostalCode: data.PostalCode || null,
+            street: data.Street,
+            city: data.City,
+            state: data.State,
+            PostalCode: data.postalCode || null,
             isDefault: true,
           },
         });

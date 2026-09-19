@@ -77,12 +77,12 @@ export default async function AccountPage() {
                     {defaultAddress.firstName} {defaultAddress.lastName}
                   </p>
                   <p>{defaultAddress.phone}</p>
-                  <p className="text-foreground/80">{defaultAddress.Street}</p>
+                  <p className="text-foreground/80">{defaultAddress.street}</p>
                   <p>
-                    {defaultAddress.City}, {defaultAddress.State}
+                    {defaultAddress.city}, {defaultAddress.state}
                   </p>
-                  {defaultAddress.PostalCode && (
-                    <p>Postal Code: {defaultAddress.PostalCode}</p>
+                  {defaultAddress.postalCode && (
+                    <p>Postal Code: {defaultAddress.postalCode}</p>
                   )}
                   <p className="text-xs font-bold uppercase tracking-wider mt-2 text-accent">
                     {userProfile.country}

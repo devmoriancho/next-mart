@@ -48,11 +48,11 @@ export default function EditProfileForm({ userProfile }: EditProfileFormProps) {
       firstName: defaultAddress?.firstName || "",
       lastName: defaultAddress?.lastName || "",
       addressPhone: defaultAddress?.phone || "",
-      Street: defaultAddress?.Street || "",
-      City: defaultAddress?.City || "",
-      State: defaultAddress?.State || "",
+      Street: defaultAddress?.street || "",
+      City: defaultAddress?.city || "",
+      State: defaultAddress?.state || "",
       country: userProfile?.country || "Kenya",
-      PostalCode: defaultAddress?.PostalCode || "",
+      PostalCode: defaultAddress?.postalCode || "",
     },
   });
 
