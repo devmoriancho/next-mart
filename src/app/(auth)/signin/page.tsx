@@ -10,10 +10,10 @@ import { useRouter } from "next/navigation";
 import FrontEndLayout from "@/components/layout/FrontEndLayout";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
-import { signinSchema, SigninInput } from "@/lib/validations/auth";
+import { signinSchema, SigninInput } from "@/lib/validations/auth-schema";
 import { authClient } from "@/lib/auth-client";
 import toast from "react-hot-toast";
-import { signInWithGoogle } from "@/app/services/signInWithGoogle";
+import { signInWithGoogle } from "@/lib/services/signInWithGoogle";
 
 export default function SigninPage() {
   const router = useRouter();

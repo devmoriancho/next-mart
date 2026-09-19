@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { Category, ProductType, Size } from "@/generated/prisma";
-import { prisma } from "@/database/db";
+import { prisma } from "@/lib/db";
 import { deleteImages } from "@/lib/cloudinary";
 import { productPayloadSchema } from "@/lib/validations/product";
-import { requireAdmin } from "@/app/server-actions/auth/require-admin";
+import { requireAdmin } from "@/lib/require-admin";
 import { z } from "zod";
 
 type ProductRouteContext = {

@@ -8,12 +8,15 @@ import { FcGoogle } from "react-icons/fc";
 import { FiArrowUpRight, FiCheck } from "react-icons/fi";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
-import { signupSchema, SignupInput } from "../../../lib/validations/auth";
+import {
+  signupSchema,
+  SignupInput,
+} from "../../../lib/validations/auth-schema";
 import FrontEndLayout from "@/components/layout/FrontEndLayout";
 import { authClient } from "@/lib/auth-client";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import { signInWithGoogle } from "@/app/services/signInWithGoogle";
+import { signInWithGoogle } from "@/lib/services/signInWithGoogle";
 
 export default function SignupPage() {
   const router = useRouter();

@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
-import { requireAdmin } from "@/app/server-actions/auth/require-admin";
 import { Category, ProductType, Size } from "@/generated/prisma";
-import { uploadImages } from "@/lib/cloudinary";
-import { prisma } from "@/database/db";
+import { prisma } from "@/lib/db";
+import { requireAdmin } from "@/lib/require-admin";
+import { uploadImages } from "@/lib/services/uploadImages";
 import { productPayloadSchema } from "@/lib/validations/product";
 import { z } from "zod";
 
@@ -30,10 +30,9 @@ export async function POST(request: Request) {
     await requireAdmin();
 
     const formData = await request.formData();
-
-    const rawColors = formData.getAll("colors") as string[];
-    const colors = rawColors.map((colorStr) => JSON.parse(colorStr));
-
+    const colors = (formData.getAll("colors") as string[]).map((color) =>
+      JSON.parse(color),
+    );
     const payload = productPayloadSchema.parse({
       name: formData.get("name"),
       description: formData.get("description"),
@@ -51,10 +50,9 @@ export async function POST(request: Request) {
       .filter(
         (image): image is File => image instanceof File && image.size > 0,
       );
-
     const uploadedImages = await uploadImages(images);
 
-    const newProduct = await prisma.product.create({
+    const product = await prisma.product.create({
       data: {
         name: payload.name,
         description: payload.description,
@@ -64,21 +62,16 @@ export async function POST(request: Request) {
         productType: payload.productType as ProductType,
         bestSeller: payload.bestSeller,
         images: {
-          create: uploadedImages.map((img) => ({
-            imageUrl: img.imageUrl,
-            publicId: img.publicId,
+          create: uploadedImages.map((image) => ({
+            imageUrl: image.imageUrl,
+            publicId: image.publicId,
           })),
         },
         sizes: {
-          create: payload.sizes.map((sizeItem) => ({
-            size: sizeItem as Size,
-          })),
+          create: payload.sizes.map((size) => ({ size: size as Size })),
         },
         colors: {
-          create: payload.colors.map((colorItem) => ({
-            name: colorItem.name,
-            value: colorItem.value,
-          })),
+          create: payload.colors,
         },
       },
     });
@@ -86,7 +79,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       success: true,
       message: "Product catalog item published successfully.",
-      product: newProduct,
+      product,
     });
   } catch (error: unknown) {
     console.error("Product listing runtime error:", error);

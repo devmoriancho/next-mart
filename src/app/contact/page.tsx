@@ -6,7 +6,7 @@ import { FiMail, FiPhone, FiMapPin, FiClock } from "react-icons/fi";
 import FrontEndLayout from "@/components/layout/FrontEndLayout";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
-import { contactSchema, ContactInput } from "@/lib/validations/auth";
+import { contactSchema, ContactInput } from "@/lib/validations/auth-schema";
 
 export default function ContactPage() {
   const {

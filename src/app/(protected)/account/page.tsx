@@ -4,7 +4,7 @@ import { FiMapPin, FiPackage } from "react-icons/fi";
 import { FaUser } from "react-icons/fa6";
 import FrontEndLayout from "@/components/layout/FrontEndLayout";
 import Button from "@/components/ui/Button";
-import { getProfile } from "@/app/server-actions/user/getProfile";
+import { getProfile } from "@/server-actions/user/getProfile";
 
 export default async function AccountPage() {
   const userProfile = await getProfile();

@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import FrontEndLayout from "@/components/layout/FrontEndLayout";
-import EditProfileForm from "@/components/User/EditProfileForm";
-import { getProfile } from "@/app/server-actions/user/getProfile";
+import EditProfileForm from "@/components/user/EditProfileForm";
+import { getProfile } from "@/server-actions/user/getProfile";
 
 export default async function EditProfilePage() {
   const userProfile = await getProfile();

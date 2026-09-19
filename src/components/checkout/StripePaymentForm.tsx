@@ -31,12 +31,11 @@ export default function StripePaymentForm({
     setError(null);
 
     try {
-      // Create payment intent on backend
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          amount: Math.round(amount * 100), // Convert to cents
+          amount: Math.round(amount * 100),
           formData,
         }),
       });
@@ -45,7 +44,6 @@ export default function StripePaymentForm({
 
       const { clientSecret } = await res.json();
 
-      // Confirm payment
       const cardElement = elements.getElement(CardElement);
       const result = await stripe.confirmCardPayment(clientSecret, {
         payment_method: {
@@ -68,7 +66,6 @@ export default function StripePaymentForm({
       if (result.error) {
         setError(result.error.message || "Payment failed");
       } else if (result.paymentIntent?.status === "succeeded") {
-        // Redirect to success page
         window.location.href = `/checkout/success?orderId=${result.paymentIntent.id}`;
       }
     } catch (err) {

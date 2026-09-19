@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
-import { getCurrentUser } from "./getCurrentUser";
-import { prisma } from "@/database/db";
+import { getCurrentUser } from "../server-actions/auth/getCurrentUser";
+import { prisma } from "@/lib/db";
 
 export async function requireAdmin() {
   const currentUser = await getCurrentUser();

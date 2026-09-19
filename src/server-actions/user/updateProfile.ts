@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { auth } from "@/lib/auth";
-import { prisma } from "@/database/db";
+import { prisma } from "@/lib/db";
 
 interface UpdateProfilePayload {
   name: string;

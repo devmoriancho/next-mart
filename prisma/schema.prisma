@@ -82,10 +82,10 @@ model Address {
   firstName   String
   lastName    String
   phone       String
-  Street      String
-  City        String
-  State       String
-  PostalCode  String?
+  street      String   
+  city        String  
+  state       String   
+  postalCode  String? 
   isDefault   Boolean  @default(false)
   userId      String
   orders      Order[]
@@ -94,6 +94,7 @@ model Address {
 
   @@map("address")
 }
+
 
 model Session {
   id        String   @id @default(uuid())
@@ -199,7 +200,7 @@ model ProductColor {
 model Order {
   id             Int           @id @default(autoincrement())
   orderNumber    String        @unique
-  stripeSessionId String?       @unique
+  stripePaymentIntentId String?     @unique
   subtotal       Decimal       @db.Decimal(10, 2)
   shipping       Decimal       @db.Decimal(10, 2)
   tax            Decimal       @db.Decimal(10, 2)
@@ -213,8 +214,9 @@ model Order {
   addressId      String
   items          OrderItem[]
 
-  user    User    @relation(fields: [userId], references: [id])
-  address Address @relation(fields: [addressId], references: [id])
+  user    User    @relation(fields: [userId], references: [id], onDelete: Restrict)
+  address Address @relation(fields: [addressId], references: [id], onDelete: Restrict)
+
 
   @@map("order")
 }

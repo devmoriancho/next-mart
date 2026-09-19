@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,8 +8,8 @@ import toast from "react-hot-toast";
 import { FiUser, FiMapPin } from "react-icons/fi";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
-import { getProfile } from "@/app/server-actions/user/getProfile";
-import { updateProfile } from "@/app/server-actions/user/updateProfile";
+import { getProfile } from "@/server-actions/user/getProfile";
+import { updateProfile } from "@/server-actions/user/updateProfile";
 
 const EditProfileSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -75,7 +74,6 @@ export default function EditProfileForm({ userProfile }: EditProfileFormProps) {
       onSubmit={handleSubmit(onSubmit)}
       className="space-y-6 max-w-4xl mx-auto"
     >
-      {/* Section 1: Core Account Details */}
       <div className="rounded-2xl border border-border bg-surface/20 p-6 space-y-4">
         <h3 className="text-xs font-bold tracking-wider text-foreground uppercase border-b border-border pb-3 flex items-center gap-2">
           <FiUser /> 1. Core Profile Details
@@ -105,7 +103,6 @@ export default function EditProfileForm({ userProfile }: EditProfileFormProps) {
         </div>
       </div>
 
-      {/* Section 2: Shipping Destination Hub */}
       <div className="rounded-2xl border border-border bg-surface/20 p-6 space-y-4">
         <h3 className="text-xs font-bold tracking-wider text-foreground uppercase border-b border-border pb-3 flex items-center gap-2">
           <FiMapPin /> 2. Default Shipping Hub Coordinates
