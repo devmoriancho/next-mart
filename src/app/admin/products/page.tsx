@@ -7,6 +7,7 @@ import AdminLayout from "@/components/layout/AdminLayout";
 import Button from "@/components/ui/Button";
 import type { AdminProduct } from "@/constants/adminData";
 import { categoryValues } from "@/lib/validations/product";
+import { getProducts } from "@/server-actions/products/getProducts";
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<AdminProduct[]>([]);
@@ -14,30 +15,28 @@ export default function AdminProductsPage() {
   const [category, setCategory] = useState("ALL");
 
   useEffect(() => {
-    fetch("/api/products")
-      .then((response) => response.json())
-      .then((data) =>
-        setProducts(
-          data.products.map(
-            (product: {
-              id: string;
-              name: string;
-              price: string | number;
-              stock: number;
-              category: string;
-              images: { imageUrl: string }[];
-            }) => ({
-              id: product.id,
-              name: product.name,
-              image: product.images[0]?.imageUrl ?? "/images/placeholder.jpg",
-              category: product.category,
-              price: Number(product.price),
-              stock: product.stock,
-              status: "Active" as const,
-            }),
-          ),
-        ),
-      );
+    async function loadInitialData() {
+      try {
+        const data = await getProducts();
+
+        if (data && Array.isArray(data)) {
+          const mappedProducts = data.map((product) => ({
+            id: product.id,
+            name: product.name,
+            image: product.images?.[0]?.imageUrl ?? "/images/placeholder.jpg",
+            category: product.category,
+            price: Number(product.price),
+            stock: product.stock,
+            status: "Active" as const,
+          }));
+          setProducts(mappedProducts);
+        }
+      } catch (err) {
+        console.error("Failed to resolve product catalog mapping:", err);
+      }
+    }
+
+    loadInitialData();
   }, []);
 
   const filteredProducts = useMemo(
@@ -56,12 +55,17 @@ export default function AdminProductsPage() {
   const handleDelete = async (id: string, name: string) => {
     if (!window.confirm(`Delete ${name}?`)) return;
 
-    const response = await fetch(`/api/products/${id}`, { method: "DELETE" });
-    if (response.ok) {
-      setProducts((current) => current.filter((product) => product.id !== id));
+    try {
+      const response = await fetch(`/api/products/${id}`, { method: "DELETE" });
+      if (response.ok) {
+        setProducts((current) =>
+          current.filter((product) => product.id !== id),
+        );
+      }
+    } catch (err) {
+      console.error("Failed to delete inventory record:", err);
     }
   };
-
   return (
     <AdminLayout>
       <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-border pb-5">
@@ -151,7 +155,7 @@ export default function AdminProductsPage() {
                   </td>
 
                   <td className="px-6 py-4 text-xs font-bold text-foreground">
-                    ${product.price.toFixed(2)}
+                    \${product.price.toFixed(2)}
                   </td>
 
                   <td className="px-6 py-4 text-xs text-foreground">

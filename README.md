@@ -51,3 +51,4 @@ Full-stack tech-commerce platform.
 - [x] Refactored core directory tree by isolating Server Actions and centralizing multi-platform libraries in a unified infrastructure hub
 - [x] Secured product API endpoints to respond with explicit machine-readable 401 and 403 HTTP status headers instead of server redirects
 - [x] Programmed a backend database rollback sequence using concurrent Promise.all arrays to auto-delete orphaned assets from Cloudinary on query failures
+- [x] Integrated server-side getProducts action to dynamically render live inventory tables inside the admin workspace
