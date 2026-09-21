@@ -48,3 +48,6 @@ Full-stack tech-commerce platform.
 - [x] Cloudinary image upload, preview, and removal.
 - [x] Admin product listing, editing, and deletion.
 - [x] Server-side validation and Prisma persistence.
+- [x] Refactored core directory tree by isolating Server Actions and centralizing multi-platform libraries in a unified infrastructure hub
+- [x] Secured product API endpoints to respond with explicit machine-readable 401 and 403 HTTP status headers instead of server redirects
+- [x] Programmed a backend database rollback sequence using concurrent Promise.all arrays to auto-delete orphaned assets from Cloudinary on query failures

@@ -1,20 +1,18 @@
-import { redirect } from "next/navigation";
-import { getCurrentUser } from "../server-actions/auth/getCurrentUser";
-import { prisma } from "@/lib/db";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 
 export async function requireAdmin() {
-  const currentUser = await getCurrentUser();
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
 
-  if (!currentUser) {
-    redirect("/signin");
+  if (!session) {
+    throw new Error("UNAUTHENTICATED");
   }
 
-  const users = await prisma.$queryRaw<{ role: string }[]>`
-    SELECT role FROM "user" WHERE id = ${currentUser.id}
-  `;
-  const user = users[0];
-
-  if (user?.role !== "ADMIN") {
-    redirect("/account");
+  if (session.user.role !== "ADMIN") {
+    throw new Error("UNAUTHORIZED");
   }
+
+  return session.user;
 }
