@@ -58,3 +58,6 @@ Full-stack tech-commerce platform.
 - [x] Configured Next.js to load Cloudinary-hosted product images.
 - [x] Normalized profile address field handling across forms and Server Actions.
 - [x] Stabilized homepage storefront grids by resolving product card type mismatches, fixing best-seller rendering paths, and patching layout skeleton syntax errors
+- [x] Engineered server-side product query filtering and sorting architecture inside getShopproducts.ts
+- [x] Connected the storefront shop layout with active URL search parameter states for persistent filter navigation
+- [x] Integrated modular ShopProducts grids, dynamic SortOptions selectors, and a reusable EmptyState feedback interface

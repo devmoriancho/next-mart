@@ -4,6 +4,8 @@ import SectionHeader from "../ui/SectionHeader";
 import { getBestSelllerProducts } from "@/server-actions/products/getBestSellerProducts";
 import ProductCardSkeleton from "../loading/skeletons/ProductCardSkeleton";
 
+export const dynamic = "force-dynamic";
+
 export default function BestSeller() {
   return (
     <section>
