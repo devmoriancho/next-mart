@@ -1,10 +1,17 @@
 import Image from "next/image";
 import Link from "next/link";
 import { IoBagOutline } from "react-icons/io5";
-import { Product } from "@/constants/dummyProducts";
+
+interface ProductCardType {
+  id: string;
+  name: string;
+  image: string;
+  price: number;
+  category: string;
+}
 
 interface ProductCardProps {
-  product: Product;
+  product: ProductCardType;
 }
 
 export default function ProductCard({ product }: ProductCardProps) {

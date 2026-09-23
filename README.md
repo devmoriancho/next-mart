@@ -57,3 +57,4 @@ Full-stack tech-commerce platform.
 - [x] Serialized Prisma Decimal product prices for Client Components.
 - [x] Configured Next.js to load Cloudinary-hosted product images.
 - [x] Normalized profile address field handling across forms and Server Actions.
+- [x] Stabilized homepage storefront grids by resolving product card type mismatches, fixing best-seller rendering paths, and patching layout skeleton syntax errors

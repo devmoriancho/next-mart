@@ -1,3 +1,4 @@
+import BestSeller from "@/components/home/BestSeller";
 import HeroSection from "@/components/home/HeroSection";
 import LatestCollection from "@/components/home/LatestCollection";
 import ShopWithUs from "@/components/home/ShopWithUs";
@@ -8,6 +9,7 @@ export default function Home() {
     <FrontEndLayout>
       <HeroSection />
       <LatestCollection />
+      <BestSeller />
       <ShopWithUs />
     </FrontEndLayout>
   );

@@ -1,32 +1,30 @@
-import SectionHeader from "../ui/SectionHeader";
-import ProductCard from "../products/ProductCard";
 import { Suspense } from "react";
-import { getLatestProducts } from "@/server-actions/products/getLatestProducts";
+import ProductCard from "../products/ProductCard";
+import SectionHeader from "../ui/SectionHeader";
+import { getBestSelllerProducts } from "@/server-actions/products/getBestSellerProducts";
 import ProductCardSkeleton from "../loading/skeletons/ProductCardSkeleton";
 
-export const dynamic = "force-dynamic";
-
-export default function LatestCollection() {
+export default function BestSeller() {
   return (
-    <section className="bg-background px-4 py-8 sm:px-6 lg:px-8">
+    <section>
       <SectionHeader
-        title="Latest Collections"
-        subTitle="New Arrivals added weekly"
+        title="Best Sellers"
+        subTitle="Discover our most-loved places, carefully selected by"
       />
 
       <Suspense fallback={<ProductCardSkeleton number={5} />}>
-        <LatestCollectionsContent />
+        <BestSellerContent />
       </Suspense>
     </section>
   );
 }
 
-async function LatestCollectionsContent() {
-  const products = (await getLatestProducts()) ?? [];
+async function BestSellerContent() {
+  const products = (await getBestSelllerProducts()) ?? [];
 
   return (
-    <div className="my-10">
-      <div className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols">
+    <div className="my-18">
+      <div className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4">
         {products.map((product) => (
           <ProductCard
             product={{
