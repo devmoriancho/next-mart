@@ -8,8 +8,8 @@ import toast from "react-hot-toast";
 import { FiUser, FiMapPin } from "react-icons/fi";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
-import { getProfile } from "@/server-actions/user/getProfile";
 import { updateProfile } from "@/server-actions/user/updateProfile";
+import type { getProfile } from "@/server-actions/user/getProfile";
 
 const EditProfileSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -18,11 +18,11 @@ const EditProfileSchema = z.object({
   firstName: z.string().min(1, "Shipping first name is required"),
   lastName: z.string().min(1, "Shipping last name is required"),
   addressPhone: z.string().min(5, "Shipping phone number is required"),
-  Street: z.string().min(3, "Street address is required"),
-  City: z.string().min(2, "City is required"),
-  State: z.string().min(2, "State/County is required"),
+  street: z.string().min(3, "Street address is required"),
+  city: z.string().min(2, "City is required"),
+  state: z.string().min(2, "State/County is required"),
   country: z.string().min(2, "Country is required"),
-  PostalCode: z.string().optional().or(z.literal("")),
+  postalCode: z.string().optional().or(z.literal("")),
 });
 
 type EditProfileFormValues = z.infer<typeof EditProfileSchema>;
@@ -48,11 +48,11 @@ export default function EditProfileForm({ userProfile }: EditProfileFormProps) {
       firstName: defaultAddress?.firstName || "",
       lastName: defaultAddress?.lastName || "",
       addressPhone: defaultAddress?.phone || "",
-      Street: defaultAddress?.street || "",
-      City: defaultAddress?.city || "",
-      State: defaultAddress?.state || "",
+      street: defaultAddress?.street || "",
+      city: defaultAddress?.city || "",
+      state: defaultAddress?.state || "",
       country: userProfile?.country || "Kenya",
-      PostalCode: defaultAddress?.postalCode || "",
+      postalCode: defaultAddress?.postalCode || "",
     },
   });
 
@@ -136,30 +136,30 @@ export default function EditProfileForm({ userProfile }: EditProfileFormProps) {
               label="Street Address"
               type="text"
               placeholder="e.g. Wood Avenue Towers, Apartment 4B"
-              error={errors.Street?.message}
-              {...register("Street")}
+              error={errors.street?.message}
+              {...register("street")}
             />
           </div>
           <Input
             label="City"
             type="text"
             placeholder="e.g. Kilimani / Nairobi"
-            error={errors.City?.message}
-            {...register("City")}
+            error={errors.city?.message}
+            {...register("city")}
           />
           <Input
             label="State / County"
             type="text"
             placeholder="e.g. Nairobi Area"
-            error={errors.State?.message}
-            {...register("State")}
+            error={errors.state?.message}
+            {...register("state")}
           />
           <Input
             label="Postal Code (Optional)"
             type="text"
             placeholder="e.g. 00100"
-            error={errors.PostalCode?.message}
-            {...register("PostalCode")}
+            error={errors.postalCode?.message}
+            {...register("postalCode")}
           />
           <Input
             label="Country"

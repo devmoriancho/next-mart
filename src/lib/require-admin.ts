@@ -1,12 +1,15 @@
+import { cookies } from "next/headers";
 import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
 
 export async function requireAdmin() {
+  const cookieStore = await cookies();
   const session = await auth.api.getSession({
-    headers: await headers(),
+    headers: {
+      cookie: cookieStore.toString(),
+    },
   });
 
-  if (!session) {
+  if (!session || !session.user) {
     throw new Error("UNAUTHENTICATED");
   }
 

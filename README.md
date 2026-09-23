@@ -52,3 +52,8 @@ Full-stack tech-commerce platform.
 - [x] Secured product API endpoints to respond with explicit machine-readable 401 and 403 HTTP status headers instead of server redirects
 - [x] Programmed a backend database rollback sequence using concurrent Promise.all arrays to auto-delete orphaned assets from Cloudinary on query failures
 - [x] Integrated server-side getProducts action to dynamically render live inventory tables inside the admin workspace
+- [x] Implemented secure admin product deletion using Server Actions and Cloudinary cleanup.
+- [x] Fixed admin product listing authentication and Server Component boundaries.
+- [x] Serialized Prisma Decimal product prices for Client Components.
+- [x] Configured Next.js to load Cloudinary-hosted product images.
+- [x] Normalized profile address field handling across forms and Server Actions.

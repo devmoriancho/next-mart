@@ -1,13 +1,15 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
-import { FiEdit2, FiPlus, FiSearch, FiTrash2 } from "react-icons/fi";
+import { FiEdit2, FiPlus, FiSearch } from "react-icons/fi";
 import AdminLayout from "@/components/layout/AdminLayout";
 import Button from "@/components/ui/Button";
 import type { AdminProduct } from "@/constants/adminData";
 import { categoryValues } from "@/lib/validations/product";
 import { getProducts } from "@/server-actions/products/getProducts";
+import DeleteProductButton from "@/components/layout/DeleteProductButton";
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<AdminProduct[]>([]);
@@ -52,20 +54,6 @@ export default function AdminProductsPage() {
     [category, products, query],
   );
 
-  const handleDelete = async (id: string, name: string) => {
-    if (!window.confirm(`Delete ${name}?`)) return;
-
-    try {
-      const response = await fetch(`/api/products/${id}`, { method: "DELETE" });
-      if (response.ok) {
-        setProducts((current) =>
-          current.filter((product) => product.id !== id),
-        );
-      }
-    } catch (err) {
-      console.error("Failed to delete inventory record:", err);
-    }
-  };
   return (
     <AdminLayout>
       <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-border pb-5">
@@ -139,13 +127,15 @@ export default function AdminProductsPage() {
                 >
                   <td className="flex items-center gap-4 px-6 py-4">
                     <div className="relative h-11 w-9 shrink-0 overflow-hidden rounded-lg border border-border bg-surface">
-                      <img
+                      <Image
                         src={product.image}
                         alt={product.name}
-                        className="h-full w-full object-cover"
+                        fill
+                        className="object-cover"
+                        sizes="36px"
                       />
                     </div>
-                    <span className="truncate max-w-[200px] text-xs font-bold text-foreground">
+                    <span className="truncate max-w-50 text-xs font-bold text-foreground">
                       {product.name}
                     </span>
                   </td>
@@ -176,13 +166,14 @@ export default function AdminProductsPage() {
                     >
                       <FiEdit2 size={14} />
                     </Link>
-                    <button
-                      onClick={() => handleDelete(product.id, product.name)}
-                      aria-label={`Delete ${product.name}`}
-                      className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-surface text-destructive hover:bg-destructive/10 hover:border-destructive/20 transition cursor-pointer active:scale-95 shadow-sm"
-                    >
-                      <FiTrash2 size={14} />
-                    </button>
+                    <DeleteProductButton
+                      productId={product.id}
+                      onDeleted={(deletedId) =>
+                        setProducts((current) =>
+                          current.filter((product) => product.id !== deletedId),
+                        )
+                      }
+                    />
                   </td>
                 </tr>
               ))}

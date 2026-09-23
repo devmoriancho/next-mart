@@ -12,9 +12,9 @@ interface UpdateProfilePayload {
   firstName: string;
   lastName: string;
   addressPhone: string;
-  Street: string;
-  City: string;
-  State: string;
+  street: string;
+  city: string;
+  state: string;
   country: string;
   postalCode?: string;
 }
@@ -60,10 +60,10 @@ export async function updateProfile(data: UpdateProfilePayload) {
             firstName: data.firstName,
             lastName: data.lastName,
             phone: data.addressPhone,
-            Street: data.Street,
-            City: data.City,
-            State: data.State,
-            PostalCode: data.postalCode || null,
+            street: data.street,
+            city: data.city,
+            state: data.state,
+            postalCode: data.postalCode || null,
           },
         });
       } else {
@@ -73,10 +73,10 @@ export async function updateProfile(data: UpdateProfilePayload) {
             firstName: data.firstName,
             lastName: data.lastName,
             phone: data.addressPhone,
-            street: data.Street,
-            city: data.City,
-            state: data.State,
-            PostalCode: data.postalCode || null,
+            street: data.street,
+            city: data.city,
+            state: data.state,
+            postalCode: data.postalCode || null,
             isDefault: true,
           },
         });

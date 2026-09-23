@@ -1,3 +1,5 @@
+"use server";
+
 import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/lib/require-admin";
 
@@ -19,7 +21,10 @@ export async function getProducts() {
       },
     });
 
-    return products;
+    return products.map((product) => ({
+      ...product,
+      price: Number(product.price),
+    }));
   } catch (error) {
     console.error("Failed to fetch products:", error);
     return [];
