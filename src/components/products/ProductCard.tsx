@@ -36,7 +36,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         <span className="text-xs tracking-wider uppercase text-muted-foreground font-medium">
           {product.category}
         </span>
-        <Link href={`/product/${product.id}`} className="focus:outline-none">
+        <Link href={`/products/${product.id}`} className="focus:outline-none">
           <h3 className="text-sm font-semibold text-foreground hover:text-accent transition-colors line-clamp-1">
             {product.name}
           </h3>

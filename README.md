@@ -61,3 +61,6 @@ Full-stack tech-commerce platform.
 - [x] Engineered server-side product query filtering and sorting architecture inside getShopproducts.ts
 - [x] Connected the storefront shop layout with active URL search parameter states for persistent filter navigation
 - [x] Integrated modular ShopProducts grids, dynamic SortOptions selectors, and a reusable EmptyState feedback interface
+- [x] Integrated server-side getProduct action to securely stream dynamic database catalog items to public product detail screens
+- [x] Engineered ProductPageSkeleton component paired with React Suspense fallbacks to eliminate screen shifting and hydration warnings
+- [x] Corrected storefront catalog hyperlinks to point cleanly to plural routing paths, eliminating 404 product link failures

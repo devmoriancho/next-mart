@@ -5,15 +5,41 @@ import Image from "next/image";
 import { IoBagAddOutline } from "react-icons/io5";
 import Button from "@/components/ui/Button";
 import BreadCrumb from "@/components/ui/BreadCrumb";
+import { getProduct } from "@/server-actions/products/getProduct";
 
-import { singleProductDetail } from "@/constants/dummyProducts";
+interface ProductPageComponentProps {
+  product: Awaited<ReturnType<typeof getProduct>>;
+}
 
-export default function ProductPageComponent() {
-  const product = singleProductDetail;
+export default function ProductPageComponent({
+  product,
+}: ProductPageComponentProps) {
+  const [selectedImage, setSelectedImage] = useState(
+    product?.images?.[0]?.imageUrl ?? "",
+  );
+  const [selectedSize, setSelectedSize] = useState(
+    product?.sizes?.[0]?.size ?? "",
+  );
+  const [selectedColor, setSelectedColor] = useState(
+    product?.colors?.[0] ?? null,
+  );
 
-  const [selectedImage, setSelectedImage] = useState(product.images[0]);
-  const [selectedSize, setSelectedSize] = useState(product.sizes[1]);
-  const [selectedColor, setSelectedColor] = useState(product.colors[1]);
+  const isOutOfStock = (product?.stock ?? 0) <= 0;
+
+  if (!product) {
+    return (
+      <div className="mx-auto max-w-7xl px-4 py-16 text-center sm:px-6 lg:px-8">
+        <p className="text-base font-semibold text-accent">404</p>
+        <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
+          Product Not Found
+        </h1>
+        <p className="mt-4 text-sm text-muted-foreground">
+          The requested store item could not be retrieved from the active
+          catalog.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -21,23 +47,25 @@ export default function ProductPageComponent() {
         items={[
           { label: "Home", href: "/" },
           { label: "Shop", href: "/shop" },
-          { label: product.name },
+          { label: product?.name ?? "" },
         ]}
       />
 
       <div className="grid gap-10 lg:grid-cols-2 lg:gap-16 mt-6">
         <div className="flex flex-col-reverse gap-4 md:flex-row">
           <div className="flex gap-3 overflow-x-auto md:flex-col md:overflow-visible">
-            {product.images.map((image) => (
+            {product.images?.map((image) => (
               <button
-                key={image}
-                onClick={() => setSelectedImage(image)}
+                key={image.id}
+                onClick={() => setSelectedImage(image.imageUrl)}
                 className={`shrink-0 overflow-hidden rounded-xl border-2 transition-all cursor-pointer ${
-                  selectedImage === image ? "border-accent" : "border-border"
+                  selectedImage === image.imageUrl
+                    ? "border-accent"
+                    : "border-border"
                 }`}
               >
                 <Image
-                  src={image}
+                  src={image.imageUrl}
                   alt={`${product.name} gallery thumbnail`}
                   width={90}
                   height={110}
@@ -47,15 +75,21 @@ export default function ProductPageComponent() {
             ))}
           </div>
 
-          <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl bg-surface border border-border shadow-md">
-            <Image
-              src={selectedImage}
-              alt={`${product.name} Main View`}
-              fill
-              sizes="(max-w-7xl) 50vw, 100vw"
-              className="object-cover transition-all duration-300"
-              priority
-            />
+          <div className="relative aspect-4/5 w-full overflow-hidden rounded-2xl bg-surface border border-border shadow-md">
+            {selectedImage ? (
+              <Image
+                src={selectedImage}
+                alt={`${product.name} Main View`}
+                fill
+                sizes="(max-w-7xl) 50vw, 100vw"
+                className="object-cover transition-all duration-300"
+                priority
+              />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center bg-muted text-xs text-muted-foreground">
+                No preview asset available
+              </div>
+            )}
           </div>
         </div>
 
@@ -69,7 +103,15 @@ export default function ProductPageComponent() {
           </h1>
 
           <p className="mt-4 text-2xl font-black text-foreground">
-            ${product.price.toFixed(2)}
+            \${Number(product.price).toFixed(2)}
+          </p>
+
+          <p
+            className={`mt-2 font-medium ${isOutOfStock ? "text-red-600" : "text-green-600"}`}
+          >
+            {isOutOfStock
+              ? "Out of Stock"
+              : `In Stock (${product?.stock} available)`}
           </p>
 
           <p className="mt-6 text-base leading-8 text-muted-foreground">
@@ -81,17 +123,17 @@ export default function ProductPageComponent() {
               Select Size
             </p>
             <div className="flex flex-wrap gap-3">
-              {product.sizes.map((size) => (
+              {product.sizes?.map((size) => (
                 <button
-                  key={size}
-                  onClick={() => setSelectedSize(size)}
+                  key={size.id}
+                  onClick={() => setSelectedSize(size.size)}
                   className={`flex h-11 w-11 items-center justify-center rounded-lg border text-sm font-semibold transition cursor-pointer hover:border-accent ${
-                    selectedSize === size
+                    selectedSize === size.size
                       ? "border-accent bg-primary text-primary-foreground"
                       : "border-border text-foreground"
                   }`}
                 >
-                  {size}
+                  {size.size}
                 </button>
               ))}
             </div>
@@ -102,13 +144,13 @@ export default function ProductPageComponent() {
               Select Color
             </p>
             <div className="flex gap-3">
-              {product.colors.map((color) => (
+              {product.colors?.map((color) => (
                 <button
                   key={color.name}
                   title={color.name}
                   onClick={() => setSelectedColor(color)}
                   className={`flex h-11 w-11 items-center justify-center rounded-full border transition cursor-pointer ${
-                    selectedColor.name === color.name
+                    selectedColor?.id === color.id
                       ? "border-accent ring-2 ring-accent ring-offset-2 ring-offset-background"
                       : "border-border"
                   }`}
@@ -125,12 +167,14 @@ export default function ProductPageComponent() {
           <div className="mt-6 rounded-xl bg-surface/50 border border-border p-4 text-xs font-medium space-y-1 max-w-sm">
             <p className="text-muted-foreground">
               Selected Size:{" "}
-              <span className="font-bold text-foreground">{selectedSize}</span>
+              <span className="font-bold text-foreground">
+                {selectedSize || "None"}
+              </span>
             </p>
             <p className="text-muted-foreground">
               Selected Color:{" "}
               <span className="font-bold text-foreground">
-                {selectedColor.name}
+                {selectedColor?.name || "None"}
               </span>
             </p>
           </div>

@@ -1,4 +1,5 @@
 import FrontEndLayout from "@/components/layout/FrontEndLayout";
+import ProductCardSkeleton from "@/components/loading/skeletons/ProductCardSkeleton";
 import FilterOptions from "@/components/shop/FilterOptions";
 import ShopProducts from "@/components/shop/ShopProducts";
 import { Suspense } from "react";
@@ -20,7 +21,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
           <FilterOptions />
 
           <div className="flex-1">
-            <Suspense>
+            <Suspense fallback={<ProductCardSkeleton number={8} />}>
               <ShopProducts searchParams={params} />
             </Suspense>
           </div>
