@@ -3,9 +3,11 @@
 import { useState } from "react";
 import Image from "next/image";
 import { IoBagAddOutline } from "react-icons/io5";
+import toast from "react-hot-toast";
 import Button from "@/components/ui/Button";
 import BreadCrumb from "@/components/ui/BreadCrumb";
 import { getProduct } from "@/server-actions/products/getProduct";
+import { useCartStore } from "@/store/cart-store";
 
 interface ProductPageComponentProps {
   product: Awaited<ReturnType<typeof getProduct>>;
@@ -14,6 +16,8 @@ interface ProductPageComponentProps {
 export default function ProductPageComponent({
   product,
 }: ProductPageComponentProps) {
+  const addToCart = useCartStore((state) => state.addToCart);
+
   const [selectedImage, setSelectedImage] = useState(
     product?.images?.[0]?.imageUrl ?? "",
   );
@@ -41,13 +45,46 @@ export default function ProductPageComponent({
     );
   }
 
+  const handleAddToCartClick = () => {
+    if (isOutOfStock) {
+      toast.error("This product is currently out of stock.");
+      return;
+    }
+
+    if (!selectedSize) {
+      toast.error("Please select an available size configuration.");
+      return;
+    }
+
+    if (!selectedColor) {
+      toast.error("Please select an inventory color option.");
+      return;
+    }
+
+    const uniqueCartKey = `${product.id}-${selectedSize}-${selectedColor.name}`;
+
+    addToCart({
+      cartKey: uniqueCartKey,
+      productId: product.id,
+      name: product.name,
+      image: product.images?.[0]?.imageUrl ?? "/images/placeholder.jpg",
+      price: Number(product.price),
+      quantity: 1,
+      selectedSize: selectedSize,
+      selectedColor: selectedColor.name,
+    });
+
+    toast.success(
+      `${product.name} (${selectedSize} / ${selectedColor.name}) added to cart!`,
+    );
+  };
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <BreadCrumb
         items={[
           { label: "Home", href: "/" },
           { label: "Shop", href: "/shop" },
-          { label: product?.name ?? "" },
+          { label: product.name },
         ]}
       />
 
@@ -57,6 +94,7 @@ export default function ProductPageComponent({
             {product.images?.map((image) => (
               <button
                 key={image.id}
+                type="button"
                 onClick={() => setSelectedImage(image.imageUrl)}
                 className={`shrink-0 overflow-hidden rounded-xl border-2 transition-all cursor-pointer ${
                   selectedImage === image.imageUrl
@@ -103,15 +141,15 @@ export default function ProductPageComponent({
           </h1>
 
           <p className="mt-4 text-2xl font-black text-foreground">
-            \${Number(product.price).toFixed(2)}
+            ${Number(product.price).toFixed(2)}
           </p>
 
           <p
-            className={`mt-2 font-medium ${isOutOfStock ? "text-red-600" : "text-green-600"}`}
+            className={`mt-2 font-medium text-xs uppercase tracking-wider ${isOutOfStock ? "text-destructive" : "text-success"}`}
           >
             {isOutOfStock
               ? "Out of Stock"
-              : `In Stock (${product?.stock} available)`}
+              : `In Stock (${product.stock} available)`}
           </p>
 
           <p className="mt-6 text-base leading-8 text-muted-foreground">
@@ -126,6 +164,7 @@ export default function ProductPageComponent({
               {product.sizes?.map((size) => (
                 <button
                   key={size.id}
+                  type="button"
                   onClick={() => setSelectedSize(size.size)}
                   className={`flex h-11 w-11 items-center justify-center rounded-lg border text-sm font-semibold transition cursor-pointer hover:border-accent ${
                     selectedSize === size.size
@@ -147,6 +186,7 @@ export default function ProductPageComponent({
               {product.colors?.map((color) => (
                 <button
                   key={color.name}
+                  type="button"
                   title={color.name}
                   onClick={() => setSelectedColor(color)}
                   className={`flex h-11 w-11 items-center justify-center rounded-full border transition cursor-pointer ${
@@ -182,10 +222,12 @@ export default function ProductPageComponent({
           <div className="mt-8">
             <Button
               fullWidth
+              onClick={handleAddToCartClick}
+              disabled={isOutOfStock}
               className="sm:w-fit sm:px-12"
               leftIcon={<IoBagAddOutline size={20} />}
             >
-              Add to Cart
+              {isOutOfStock ? "Sold Out" : "Add to Cart"}
             </Button>
           </div>
         </div>

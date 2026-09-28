@@ -114,14 +114,14 @@ export const dummyShopProducts: Product[] = [
 export const dummyCartItems: CartItem[] = [
   {
     id: "cart-item-01",
-    product: dummyShopProducts[1], // Pointing directly to your Vintage Canvas Utility Outerwear
+    product: dummyShopProducts[1],
     quantity: 1,
     selectedSize: "M",
     selectedColor: "Russet Orange",
   },
   {
     id: "cart-item-02",
-    product: dummyShopProducts[0], // Pointing directly to your Minimalist Leather Blazer
+    product: dummyShopProducts[0],
     quantity: 2,
     selectedSize: "L",
     selectedColor: "Obsidian",

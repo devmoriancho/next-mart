@@ -64,3 +64,6 @@ Full-stack tech-commerce platform.
 - [x] Integrated server-side getProduct action to securely stream dynamic database catalog items to public product detail screens
 - [x] Engineered ProductPageSkeleton component paired with React Suspense fallbacks to eliminate screen shifting and hydration warnings
 - [x] Corrected storefront catalog hyperlinks to point cleanly to plural routing paths, eliminating 404 product link failures
+- [x] Implemented global state management stores for both Cart and Search using Zustand with local storage persistence middleware
+- [x] Wired dynamic item variant keys (cartKey) to allow accurate size/color selections inside product detail and checkout grids
+- [x] Integrated a reactive navbar CartCount badge and resolved cascading effect state hydration errors using micro-task timers

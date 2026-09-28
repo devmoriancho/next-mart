@@ -6,6 +6,7 @@ import { useState } from "react";
 import { FaRegUser } from "react-icons/fa";
 import { FiMenu, FiX } from "react-icons/fi";
 import { IoBagOutline, IoSearch } from "react-icons/io5";
+import CartCount from "./CartCount";
 
 interface NavLink {
   href: string;
@@ -71,9 +72,7 @@ export default function Navbar() {
             onClick={() => router.push("/cart")}
           >
             <IoBagOutline size={21} />
-            <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-accent-foreground">
-              0
-            </span>
+            <CartCount />
           </button>
 
           <button
