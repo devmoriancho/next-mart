@@ -22,13 +22,16 @@ export default function ProductCard({ product }: ProductCardProps) {
           src={product.image}
           alt={product.name}
           fill
-          sizes="(max-w-7xl) 25vw, 50vw"
           className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
         />
         <div className="absolute bottom-3 right-3 translate-y-4 opacity-0 transition-all duration-300 ease-out group-hover:translate-y-0 group-hover:opacity-100">
-          <button className="flex h-10 w-10 items-center justify-center rounded-full bg-background text-foreground shadow-md transition-all hover:bg-primary hover:text-primary-foreground active:scale-95">
+          <Link
+            href={`/products/${product.id}`}
+            aria-label={`Choose options for ${product.name}`}
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-background text-foreground shadow-md transition-all hover:bg-primary hover:text-primary-foreground active:scale-95"
+          >
             <IoBagOutline size={18} />
-          </button>
+          </Link>
         </div>
       </div>
 

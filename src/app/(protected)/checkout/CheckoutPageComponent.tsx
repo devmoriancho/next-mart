@@ -1,21 +1,23 @@
 "use client";
 
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { FiChevronLeft, FiLock } from "react-icons/fi";
-import { Elements } from "@stripe/react-stripe-js";
-import { loadStripe } from "@stripe/stripe-js";
+import toast from "react-hot-toast";
 import FrontEndLayout from "@/components/layout/FrontEndLayout";
 import Input from "@/components/ui/Input";
-import StripePaymentForm from "@/components/checkout/StripePaymentForm";
-import { dummyCartItems } from "@/constants/dummyProducts";
+import CodPaymentForm from "@/components/checkout/CodPaymentForm";
+import { useCartStore } from "@/store/cart-store";
+import { placeOrder } from "@/server-actions/order/placeOrder";
 
-const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || "",
-);
+export default function CheckoutPageComponent() {
+  const router = useRouter();
+  const { cartItems, clearCart } = useCartStore();
+  const [hasHydrated, setHasHydrated] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-export default function CheckoutPage() {
-  const [cartItems] = useState(dummyCartItems);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -27,12 +29,22 @@ export default function CheckoutPage() {
     postal: "",
   });
 
+  useEffect(() => {
+    useCartStore.persist.rehydrate();
+    const timer = setTimeout(() => {
+      setHasHydrated(true);
+    }, 0);
+    return () => clearTimeout(timer);
+  }, []);
+
   const subtotal = cartItems.reduce(
-    (acc, item) => acc + item.product.price * item.quantity,
+    (acc, item) => acc + item.price * item.quantity,
     0,
   );
-  const shippingCost = subtotal > 200 || subtotal === 0 ? 0 : 15.0;
-  const taxCost = subtotal * 0.08;
+  const shippingThreshold = 200;
+  const shippingCost =
+    subtotal > shippingThreshold || subtotal === 0 ? 0 : 15.0;
+  const taxCost = subtotal * 0.05;
   const grossTotal = subtotal + shippingCost + taxCost;
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -40,10 +52,77 @@ export default function CheckoutPage() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  if (!hasHydrated) {
+    return (
+      <FrontEndLayout>
+        <section className="mx-auto max-w-7xl px-4 py-24 text-center animate-pulse">
+          <div className="h-8 w-48 bg-surface rounded-xl mx-auto mb-4" />
+          <div className="h-4 w-64 bg-surface rounded-lg mx-auto" />
+        </section>
+      </FrontEndLayout>
+    );
+  }
+  const handlePlaceCodOrder = async () => {
+    if (
+      !formData.firstName ||
+      !formData.lastName ||
+      !formData.email ||
+      !formData.phone ||
+      !formData.address ||
+      !formData.city ||
+      !formData.state ||
+      !formData.postal
+    ) {
+      toast.error("Please fill out all shipping address fields first.");
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+
+      const formattedCartItems = cartItems.map((item) => ({
+        productId: item.productId,
+        quantity: item.quantity,
+        size: item.selectedSize,
+        color: item.selectedColor,
+        price: item.price,
+      }));
+
+      const result = await placeOrder({
+        shippingAddress: {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          phone: formData.phone,
+          street: formData.address,
+          city: formData.city,
+          state: formData.state,
+          postalCode: formData.postal,
+          country: "Kenya",
+        },
+        cartItems: formattedCartItems,
+        paymentMethod: "CASH_ON_DELIVERY",
+      });
+
+      if (!result.success) {
+        toast.error(result.message || "Unable to place order.");
+        return;
+      }
+
+      toast.success("Order placed successfully!");
+      clearCart();
+      router.push(`/account/orders/${result.orderNumber}`);
+    } catch (error) {
+      console.error("Checkout submission failure:", error);
+      toast.error("An unexpected error occurred while saving your order.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <FrontEndLayout>
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-border pb-6">
+        <div className="mb-10 border-b border-border pb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <Link
               href="/cart"
@@ -56,7 +135,7 @@ export default function CheckoutPage() {
             </h1>
           </div>
           <div className="inline-flex items-center gap-2 rounded-xl bg-success/10 border border-success/20 px-4 py-2 text-xs font-bold uppercase tracking-wider text-success w-fit">
-            <FiLock size={14} /> SSL Encrypted Gateway
+            <FiLock size={14} /> Cash on Delivery Protection
           </div>
         </div>
 
@@ -150,14 +229,15 @@ export default function CheckoutPage() {
                 />
               </div>
             </div>
-
             <div className="rounded-2xl border border-border bg-surface/20 p-6">
               <h2 className="text-base font-bold tracking-tight text-foreground mb-6 uppercase">
                 2. Payment Method
               </h2>
-              <Elements stripe={stripePromise}>
-                <StripePaymentForm amount={grossTotal} formData={formData} />
-              </Elements>
+              <CodPaymentForm
+                amount={grossTotal}
+                isSubmitting={isSubmitting}
+                onConfirm={handlePlaceCodOrder}
+              />
             </div>
           </div>
 
@@ -170,26 +250,28 @@ export default function CheckoutPage() {
               <div className="mt-6 border-b border-border pb-5 space-y-4 max-h-60 overflow-y-auto pr-1">
                 {cartItems.map((item) => (
                   <div
-                    key={item.id}
+                    key={item.cartKey}
                     className="flex gap-4 items-center text-sm"
                   >
                     <div className="relative h-14 w-11 shrink-0 overflow-hidden rounded-lg border border-border bg-surface">
-                      <img
-                        src={item.product.image}
-                        alt={item.product.name}
-                        className="h-full w-full object-cover"
+                      <Image
+                        src={item.image}
+                        alt={item.name}
+                        fill
+                        sizes="44px"
+                        className="object-cover"
                       />
                     </div>
                     <div className="flex-1 min-w-0">
                       <h4 className="font-bold text-foreground text-xs truncate">
-                        {item.product.name}
+                        {item.name}
                       </h4>
                       <p className="text-muted-foreground text-[11px] font-semibold mt-0.5">
                         QTY: {item.quantity} · SIZE: {item.selectedSize}
                       </p>
                     </div>
                     <p className="font-extrabold text-foreground text-xs">
-                      ${(item.product.price * item.quantity).toFixed(2)}
+                      ${(item.price * item.quantity).toFixed(2)}
                     </p>
                   </div>
                 ))}
@@ -215,7 +297,7 @@ export default function CheckoutPage() {
                   )}
                 </div>
                 <div className="flex justify-between">
-                  <span>Tax</span>
+                  <span>Tax (5%)</span>
                   <span className="text-foreground">${taxCost.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between border-t border-border pt-4 text-base font-black text-foreground">

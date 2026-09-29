@@ -67,3 +67,7 @@ Full-stack tech-commerce platform.
 - [x] Implemented global state management stores for both Cart and Search using Zustand with local storage persistence middleware
 - [x] Wired dynamic item variant keys (cartKey) to allow accurate size/color selections inside product detail and checkout grids
 - [x] Integrated a reactive navbar CartCount badge and resolved cascading effect state hydration errors using micro-task timers
+  - [x] Engineered atomic database order creation inside createOrder.ts using Prisma transactions and secure stock decrements
+- [x] Implemented placeOrder.ts server action to protect checkout paths with backend session checks and inventory guards
+- [x] Connected CheckoutPageComponent and CodPaymentForm inside the (protected) route folder with automated Zustand cart clearing
+- [x] Synchronized platform financial math to a unified 5% tax baseline across client components and server calculation models

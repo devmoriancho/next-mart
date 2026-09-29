@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { FiLock } from "react-icons/fi";
 import Button from "@/components/ui/Button";
@@ -14,6 +15,7 @@ export default function StripePaymentForm({
   amount,
   formData,
 }: StripePaymentFormProps) {
+  const router = useRouter();
   const stripe = useStripe();
   const elements = useElements();
   const [loading, setLoading] = useState(false);
@@ -66,7 +68,7 @@ export default function StripePaymentForm({
       if (result.error) {
         setError(result.error.message || "Payment failed");
       } else if (result.paymentIntent?.status === "succeeded") {
-        window.location.href = `/checkout/success?orderId=${result.paymentIntent.id}`;
+        router.push(`/checkout/success?orderId=${result.paymentIntent.id}`);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Payment error");

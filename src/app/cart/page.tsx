@@ -42,7 +42,7 @@ export default function CartPage() {
   const shippingThreshold = 200;
   const shippingCost =
     subtotal > shippingThreshold || subtotal === 0 ? 0 : 15.0;
-  const taxCoefficient = 0.08;
+  const taxCoefficient = 0.05;
   const taxCost = subtotal * taxCoefficient;
   const grossTotal = subtotal + shippingCost + taxCost;
 
@@ -148,7 +148,7 @@ export default function CartPage() {
                       </button>
                     </div>
 
-                    <div className="text-right min-w-[80px]">
+                    <div className="text-right min-w-80px">
                       <p className="text-base font-extrabold text-foreground">
                         ${(item.price * item.quantity).toFixed(2)}
                       </p>
@@ -206,9 +206,11 @@ export default function CartPage() {
               </div>
 
               <div className="mt-8">
-                <Button fullWidth className="shadow-lg shadow-accent/10">
-                  Checkout
-                </Button>
+                <Link href="/checkout" className="block">
+                  <Button fullWidth className="shadow-lg shadow-accent/10">
+                    Checkout
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>

@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { FiChevronLeft, FiTrash2, FiUpload } from "react-icons/fi";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useWatch } from "react-hook-form";
@@ -162,9 +163,11 @@ export default function CreateProductPage() {
               >
                 {selectedImages[index] ? (
                   <>
-                    <img
+                    <Image
                       src={selectedImages[index].previewUrl}
                       alt={`Product preview ${index + 1}`}
+                      fill
+                      sizes="(max-width: 640px) 50vw, 25vw"
                       className="h-full w-full rounded-lg object-cover"
                     />
                     <button
