@@ -22,12 +22,13 @@
     "react-hook-form": "^7.87.0",
     "react-hot-toast": "^2.6.0",
     "react-icons": "^5.7.0",
-    "stripe": "^22.6.1",
+    "stripe": "^22.6.2",
     "zod": "^4.5.4",
     "zustand": "^5.0.15"
   },
   "devDependencies": {
     "@prisma/client": "^7.10.0",
+    "@stripe/cli": "^1.52.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

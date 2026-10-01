@@ -117,6 +117,8 @@ export default function CheckoutPageComponent() {
     } finally {
       setIsSubmitting(false);
     }
+
+    // continue to stripe
   };
 
   return (
