@@ -1,14 +1,19 @@
-"use client";
-
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 import { FiCheckCircle, FiArrowRight } from "react-icons/fi";
 import FrontEndLayout from "@/components/layout/FrontEndLayout";
 import Button from "@/components/ui/Button";
+import { completeStripeOrder } from "@/server-actions/order/completeStripeOrder";
 
-export default function CheckoutSuccessPage() {
-  const searchParams = useSearchParams();
-  const orderId = searchParams.get("orderId") || "unknown";
+export default async function CheckoutSuccessPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ session_id?: string }>;
+}) {
+  const { session_id: sessionId } = await searchParams;
+  const result = sessionId
+    ? await completeStripeOrder(sessionId)
+    : { success: false, message: "Missing Stripe checkout session." };
+  const orderId = result.success ? result.orderNumber : "pending";
 
   return (
     <FrontEndLayout>
@@ -18,11 +23,13 @@ export default function CheckoutSuccessPage() {
         </div>
 
         <h1 className="text-4xl font-extrabold tracking-tight text-foreground mb-4">
-          Order Confirmed
+          {result.success ? "Order Confirmed" : "Payment Received"}
         </h1>
 
         <p className="text-lg text-muted-foreground max-w-md mx-auto mb-2">
-          Thank you for your purchase!
+          {result.success
+            ? "Thank you for your purchase!"
+            : result.message || "We are still processing your order."}
         </p>
 
         <p className="text-sm text-muted-foreground/70 max-w-md mx-auto mb-8">

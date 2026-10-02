@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db";
-import { stripe } from "@/lib/stripe";
+import { getStripe } from "@/lib/stripe";
+import { calculateCheckoutTotals } from "@/constants/checkout";
 import { getCurrentUser } from "../auth/getCurrentUser";
 
 interface CreateStripeCheckoutSessionInput {
@@ -10,6 +11,7 @@ interface CreateStripeCheckoutSessionInput {
     street: string;
     city: string;
     state: string;
+    postalCode: string;
     country: string;
   };
 
@@ -57,7 +59,7 @@ export async function createStripeCheckoutSession(
       };
     }
 
-    const lineItems = data.cartItems.map((item) => {
+    const productLineItems = data.cartItems.map((item) => {
       const product = products.find(({ id }) => id === item.productId);
 
       if (!product) {
@@ -83,8 +85,46 @@ export async function createStripeCheckoutSession(
       };
     });
 
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-    const session = await stripe.checkout.sessions.create({
+    const subtotal =
+      productLineItems.reduce(
+        (total, item) =>
+          total + (item.price_data.unit_amount ?? 0) * (item.quantity ?? 0),
+        0,
+      ) / 100;
+    const totals = calculateCheckoutTotals(subtotal);
+    const lineItems = [
+      ...productLineItems,
+      ...(totals.shipping > 0
+        ? [
+            {
+              price_data: {
+                currency: (process.env.STRIPE_CURRENCY || "usd").toLowerCase(),
+                product_data: { name: "Shipping" },
+                unit_amount: Math.round(totals.shipping * 100),
+              },
+              quantity: 1,
+            },
+          ]
+        : []),
+      ...(totals.tax > 0
+        ? [
+            {
+              price_data: {
+                currency: (process.env.STRIPE_CURRENCY || "usd").toLowerCase(),
+                product_data: { name: "Tax" },
+                unit_amount: Math.round(totals.tax * 100),
+              },
+              quantity: 1,
+            },
+          ]
+        : []),
+    ];
+
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL;
+    if (!baseUrl) {
+      throw new Error("NEXT_PUBLIC_APP_URL is not configured.");
+    }
+    const session = await getStripe().checkout.sessions.create({
       mode: "payment",
       line_items: lineItems,
       customer_email: currentUser.email,
@@ -93,7 +133,10 @@ export async function createStripeCheckoutSession(
       metadata: {
         userId: currentUser.id,
         cartItems: JSON.stringify(data.cartItems),
-        shippingAddress: JSON.stringify(data.shippingAddress),
+        shippingAddress: JSON.stringify({
+          ...data.shippingAddress,
+          email: currentUser.email,
+        }),
       },
     });
 

@@ -1,13 +1,27 @@
 "use server";
 
-import { prisma } from "@/lib/db";
 import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
+import { prisma } from "@/lib/db";
+import { cookies, headers } from "next/headers";
 
 export async function getCurrentUser() {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  let session;
+
+  try {
+    session = await auth.api.getSession({
+      headers: await headers(),
+    });
+  } catch (error) {
+    const cookieStore = await cookies();
+    cookieStore.delete("better-auth.session_token");
+    cookieStore.delete("__Secure-better-auth.session_token");
+
+    console.warn(
+      "Invalid Better Auth session cleared:",
+      error instanceof Error ? error.message : error,
+    );
+    return null;
+  }
 
   if (!session?.user.id) return null;
 
@@ -15,6 +29,7 @@ export async function getCurrentUser() {
     where: { id: session.user.id },
     select: {
       id: true,
+      email: true,
     },
   });
 

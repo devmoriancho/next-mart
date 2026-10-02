@@ -6,6 +6,7 @@ import {
   PaymentMethod,
   PaymentStatus,
 } from "@/generated/prisma/client";
+import { calculateCheckoutTotals } from "@/constants/checkout";
 
 export interface CreateOrderInput {
   userId: string;
@@ -84,9 +85,11 @@ export async function createOrder(data: CreateOrderInput) {
       });
     }
 
-    const shippingCost = subtotal > 200 || subtotal === 0 ? 0 : 15.0;
-    const taxCost = subtotal * 0.05;
-    const grossTotal = subtotal + shippingCost + taxCost;
+    const {
+      shipping: shippingCost,
+      tax: taxCost,
+      total: grossTotal,
+    } = calculateCheckoutTotals(subtotal);
     const orderNumber = generateOrderNumber();
 
     const finalizedOrder = await prisma.$transaction(async (tx) => {
