@@ -95,7 +95,6 @@ model Address {
   @@map("address")
 }
 
-
 model Session {
   id        String   @id @default(uuid())
   userId    String
@@ -129,7 +128,6 @@ model Account {
   @@map("account")
 }
 
-
 model Verification {
   id         String    @id @default(uuid())
   identifier String
@@ -140,8 +138,6 @@ model Verification {
 
   @@map("verification")
 }
-
-
 
 model Product {
   id          String         @id @default(cuid())
