@@ -1,3 +1,3 @@
-import CheckoutPageComponent from "./CheckoutPageComponent";
+import CheckoutPageComponent from "@/components/checkout/CheckoutPageComponent";
 
 export default CheckoutPageComponent;
