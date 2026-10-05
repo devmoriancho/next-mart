@@ -87,3 +87,7 @@ Full-stack tech-commerce platform.
 - [x] Implemented nested Prisma relation lookups to securely fetch user orders, item metadata, and product catalog image thumbnails in a single database transaction
 - [x] Restructured order tracking pathways to route seamlessly using unique alphanumeric order numbers instead of sequential database integers
 - [x] Enforced strict session checks and identity validation inside account server actions to prevent cross-user data exposure leaks
+- [x] Engineered a highly secure administrative dashboard pipeline utilizing strict session role boundaries to intercept unauthorized access attempts
+- [x] Implemented a high-speed server-to-client architecture separating database execution tasks from interactive client-side query inputs
+- [x] Sanitized heavy database payloads by converting complex SQL Decimal objects into browser-safe JavaScript primitive values to ensure clean data serialization
+- [x] Restructured admin data objects to leverage Prisma relational aggregations (\_count) to pull exact item units cleanly with absolute type safety
