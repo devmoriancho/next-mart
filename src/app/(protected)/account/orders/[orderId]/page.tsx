@@ -1,47 +1,32 @@
-"use client";
-
 import Image from "next/image";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { FiArrowLeft, FiPackage, FiMapPin } from "react-icons/fi";
 import FrontEndLayout from "@/components/layout/FrontEndLayout";
 import Button from "@/components/ui/Button";
 import BreadCrumb from "@/components/ui/BreadCrumb";
+import { getOrderDetails } from "@/server-actions/order/getOrderDetails";
 
-const order = {
-  id: "ORD-8FK2P9",
-  createdAt: "July 27, 2026",
-  status: "Pending",
-  paymentMethod: "M-Pesa Checkout Gateway",
-  paymentStatus: "Settled Verified",
+interface PageProps {
+  params: Promise<{ orderId: string }>;
+}
 
-  subtotal: 89.5,
-  shipping: 0,
-  tax: 5.5,
-  total: 95.0,
+export default async function OrderPage({ params }: PageProps) {
+  const resolvedParams = await params;
+  const response = await getOrderDetails(resolvedParams.orderId);
 
-  address: {
-    firstName: "Vincent",
-    lastName: "Parkolwa",
-    phone: "+254 701 234 567",
-    street: "Wood Avenue Towers, Box 45",
-    city: "Kilimani District",
-    state: "Nairobi",
-    country: "Kenya",
-  },
-  items: [
-    {
-      id: "prod-02",
-      name: "Vintage Canvas Utility Outerwear",
-      image: "/images/product-vintage-orange-jacket-01.jpg",
-      price: 89.5,
-      quantity: 1,
-      size: "M",
-      color: "Russet Orange",
-    },
-  ],
-};
+  if (!response.success || !response.data) {
+    notFound();
+  }
 
-export default function OrderPage() {
+  const order = response.data;
+
+  const formattedDate = new Date(order.createdAt).toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+
   return (
     <FrontEndLayout>
       <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
@@ -50,7 +35,7 @@ export default function OrderPage() {
             { label: "Home", href: "/" },
             { label: "Account", href: "/account" },
             { label: "Orders", href: "/account/orders" },
-            { label: order.id },
+            { label: `#${order.orderNumber}` },
           ]}
         />
 
@@ -67,10 +52,10 @@ export default function OrderPage() {
             </Link>
 
             <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">
-              Manifest {order.id}
+              Manifest #{order.orderNumber}
             </h1>
             <p className="mt-1 text-sm font-medium text-muted-foreground">
-              Logged to pipeline on {order.createdAt}
+              Logged to pipeline on {formattedDate}
             </p>
           </div>
 
@@ -94,46 +79,53 @@ export default function OrderPage() {
               </div>
 
               <div className="mt-6 space-y-4">
-                {order.items.map((item) => (
-                  <div
-                    key={item.id}
-                    className="flex flex-col gap-5 rounded-xl border border-border bg-background p-5 sm:flex-row sm:items-center"
-                  >
-                    <div className="relative aspect-3/4 w-24 shrink-0 overflow-hidden rounded-xl border border-border">
-                      <Image
-                        src={item.image}
-                        alt={item.name}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
+                {order.items.map((item) => {
+                  const primaryImage =
+                    item.product?.images?.[0]?.imageUrl ||
+                    "/images/placeholder.jpg";
 
-                    <div className="flex flex-1 flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                      <div>
-                        <h3 className="text-sm font-bold text-foreground">
-                          {item.name}
-                        </h3>
-                        <div className="mt-3 flex flex-wrap gap-2 text-xs font-semibold text-muted-foreground uppercase">
-                          <span className="rounded-lg bg-surface px-2.5 py-1 border border-border">
-                            Size: {item.size}
-                          </span>
-                          <span className="rounded-lg bg-surface px-2.5 py-1 border border-border">
-                            Hue: {item.color}
-                          </span>
-                          <span className="rounded-lg bg-surface px-2.5 py-1 border border-border">
-                            Units: {item.quantity}
-                          </span>
+                  return (
+                    <div
+                      key={item.id}
+                      className="flex flex-col gap-5 rounded-xl border border-border bg-background p-5 sm:flex-row sm:items-center"
+                    >
+                      <div className="relative aspect-3/4 w-24 shrink-0 overflow-hidden rounded-xl border border-border">
+                        <Image
+                          src={primaryImage}
+                          alt={item.product?.name || "Product Item"}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+
+                      <div className="flex flex-1 flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                          <h3 className="text-sm font-bold text-foreground">
+                            {item.product?.name}
+                          </h3>
+                          <div className="mt-3 flex flex-wrap gap-2 text-xs font-semibold text-muted-foreground uppercase">
+                            <span className="rounded-lg bg-surface px-2.5 py-1 border border-border">
+                              Size: {item.size}
+                            </span>
+                            <span className="rounded-lg bg-surface px-2.5 py-1 border border-border">
+                              Hue: {item.color}
+                            </span>
+                            <span className="rounded-lg bg-surface px-2.5 py-1 border border-border">
+                              Units: {item.quantity}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="text-left sm:text-right">
+                          <p className="text-lg font-extrabold text-foreground">
+                            KES{" "}
+                            {(Number(item.price) * item.quantity).toLocaleString()}
+                          </p>
                         </div>
                       </div>
-
-                      <div className="text-left sm:text-right">
-                        <p className="text-lg font-extrabold text-foreground">
-                          ${(item.price * item.quantity).toFixed(2)}
-                        </p>
-                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -148,27 +140,31 @@ export default function OrderPage() {
                 <div className="flex justify-between">
                   <span>Subtotal</span>
                   <span className="text-foreground">
-                    ${order.subtotal.toFixed(2)}
+                    KES {Number(order.subtotal).toLocaleString()}
                   </span>
                 </div>
 
                 <div className="flex justify-between">
                   <span>Shipping</span>
                   <span className="text-success uppercase font-bold text-xs tracking-wider">
-                    Free
+                    {Number(order.shipping) === 0
+                      ? "Free"
+                      : `KES ${Number(order.shipping).toLocaleString()}`}
                   </span>
                 </div>
 
                 <div className="flex justify-between">
                   <span>Tax</span>
                   <span className="text-foreground">
-                    ${order.tax.toFixed(2)}
+                    KES {Number(order.tax).toLocaleString()}
                   </span>
                 </div>
 
                 <div className="flex justify-between border-t border-border pt-4 text-lg font-black text-foreground">
                   <span>Total</span>
-                  <span className="text-accent">${order.total.toFixed(2)}</span>
+                  <span className="text-accent">
+                    KES {Number(order.total).toLocaleString()}
+                  </span>
                 </div>
               </div>
             </div>
@@ -193,9 +189,6 @@ export default function OrderPage() {
                 </p>
                 <p>
                   {order.address.city}, {order.address.state}
-                </p>
-                <p className="text-xs font-bold uppercase tracking-wider mt-1">
-                  {order.address.country}
                 </p>
               </div>
             </div>

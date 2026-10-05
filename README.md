@@ -83,3 +83,7 @@ Full-stack tech-commerce platform.
 - [x] Restructured checkout directory layouts within the invisible (protected) routing group to resolve overlapping path compilation errors
 - [x] Implemented a self-correcting validation loop on the checkout success screen to handle payment state verification delays seamlessly
 - [x] Linked the client state Zustand hooks to the transaction completion engine to clear shopping cart arrays automatically on verified payments
+- [x] Engineered a dynamic, server-rendered purchase history pipeline using Next.js Server Components for maximum speed and SEO optimization
+- [x] Implemented nested Prisma relation lookups to securely fetch user orders, item metadata, and product catalog image thumbnails in a single database transaction
+- [x] Restructured order tracking pathways to route seamlessly using unique alphanumeric order numbers instead of sequential database integers
+- [x] Enforced strict session checks and identity validation inside account server actions to prevent cross-user data exposure leaks
