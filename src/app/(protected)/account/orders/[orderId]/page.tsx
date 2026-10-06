@@ -55,7 +55,7 @@ export default async function OrderPage({ params }: PageProps) {
               Manifest #{order.orderNumber}
             </h1>
             <p className="mt-1 text-sm font-medium text-muted-foreground">
-              Logged to pipeline on {formattedDate}
+              Order placed on {formattedDate}
             </p>
           </div>
 

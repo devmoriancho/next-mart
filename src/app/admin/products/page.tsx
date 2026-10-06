@@ -6,10 +6,19 @@ import Link from "next/link";
 import { FiEdit2, FiPlus, FiSearch } from "react-icons/fi";
 import AdminLayout from "@/components/layout/AdminLayout";
 import Button from "@/components/ui/Button";
-import type { AdminProduct } from "@/constants/adminData";
 import { categoryValues } from "@/lib/validations/product";
 import { getProducts } from "@/server-actions/products/getProducts";
 import DeleteProductButton from "@/components/layout/DeleteProductButton";
+
+interface AdminProduct {
+  id: string;
+  name: string;
+  image: string;
+  category: string;
+  price: number;
+  stock: number;
+  status: "Active" | "Draft";
+}
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<AdminProduct[]>([]);

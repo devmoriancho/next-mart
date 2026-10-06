@@ -9,21 +9,21 @@ interface Feature {
 const features: Feature[] = [
   {
     icon: FiGlobe,
-    title: "Global Logistics",
+    title: "Worldwide delivery",
     description:
-      "Expedited premium shipping network spanning over 150 regions worldwide.",
+      "We deliver orders to many places around the world.",
   },
   {
     icon: FiShield,
-    title: "Secure Infrastructure",
+    title: "Safe payments",
     description:
-      "Bank-grade encrypted tokenization powered by certified payment gateways.",
+      "Your card payment is handled safely by our payment provider.",
   },
   {
     icon: FiHeadphones,
-    title: "Concierge Assistance",
+    title: "Friendly support",
     description:
-      "Dedicated expert support specialists available around the clock.",
+      "Our support team is here to help with your questions.",
   },
 ];
 

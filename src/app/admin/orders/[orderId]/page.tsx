@@ -40,7 +40,7 @@ export default async function AdminSingleOrderPage({ params }: PageProps) {
               Fulfillment Manifest #{order.orderNumber}
             </h1>
             <p className="mt-1 text-sm font-medium text-muted-foreground">
-              Logged to pipeline on {formattedDate}
+              Order placed on {formattedDate}
             </p>
           </div>
         </div>

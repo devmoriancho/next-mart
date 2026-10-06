@@ -29,11 +29,10 @@ export default function ContactPage() {
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="mb-12 border-b border-border pb-6 text-center lg:text-left">
           <h1 className="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
-            Connect With Our Concierge
+            Contact Us
           </h1>
           <p className="mt-2 text-base text-muted-foreground">
-            Have questions regarding our architectural sub-collections or
-            logistics pipelines? Get in touch.
+            Have a question about our products or delivery? Send us a message.
           </p>
         </div>
 
@@ -45,23 +44,22 @@ export default function ContactPage() {
               </div>
               <div>
                 <h3 className="text-base font-bold text-foreground uppercase tracking-wider">
-                  Operational SLA
+                  Response time
                 </h3>
                 <p className="mt-1 text-sm text-muted-foreground font-medium">
-                  Concierge assistance guarantees all incoming inquiries are
-                  processed and resolved within 2 operational hours.
+                  We usually reply to messages within two hours.
                 </p>
               </div>
             </div>
 
             <div className="rounded-2xl border border-border bg-surface/20 p-6 space-y-5">
               <h3 className="text-sm font-bold text-foreground uppercase tracking-wider border-b border-border pb-3">
-                Communications & HQ
+                Contact details
               </h3>
 
               <div className="flex items-center gap-4 text-sm font-medium text-muted-foreground">
                 <FiMail size={18} className="text-accent" />
-                <span>concierge@nexusmart.com</span>
+                <span>support@nexusmart.com</span>
               </div>
 
               <div className="flex items-center gap-4 text-sm font-medium text-muted-foreground">
@@ -86,7 +84,7 @@ export default function ContactPage() {
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
               <Input
                 label="Full Name"
-                placeholder="Vincent Parkolwa"
+                placeholder="Your name"
                 type="text"
                 error={errors.fullName?.message}
                 {...register("fullName")}
@@ -94,7 +92,7 @@ export default function ContactPage() {
 
               <Input
                 label="Email Address"
-                placeholder="vincent@nexusmart.com"
+                placeholder="you@example.com"
                 type="email"
                 error={errors.email?.message}
                 {...register("email")}
@@ -102,25 +100,23 @@ export default function ContactPage() {
 
               <Input
                 label="Subject Topic"
-                placeholder="Inquiry regarding limited outerwear drops"
+                placeholder="How can we help?"
                 type="text"
                 error={errors.subject?.message}
                 {...register("subject")}
               />
 
               <Input
-                label="Message Payload"
+                label="Message"
                 variant="textarea"
-                placeholder="Describe your inquiry details thoroughly..."
+                placeholder="Write your message..."
                 error={errors.message?.message}
                 {...register("message")}
               />
 
               <div className="pt-2">
                 <Button type="submit" fullWidth disabled={isSubmitting}>
-                  {isSubmitting
-                    ? "Dispatching Message..."
-                    : "Send Secure Message"}
+                  {isSubmitting ? "Sending..." : "Send Message"}
                 </Button>
               </div>
             </form>

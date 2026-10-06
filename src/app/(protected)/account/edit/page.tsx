@@ -18,7 +18,7 @@ export default async function EditProfilePage() {
             Edit Account Profile
           </h1>
           <p className="mt-1.5 text-sm font-medium text-muted-foreground">
-            Modify your digital profile metrics and default dispatch shipping
+            Update your profile and default delivery address
             coordinates.
           </p>
         </div>

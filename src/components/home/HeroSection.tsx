@@ -6,7 +6,7 @@ export default function HeroSection() {
       <div className="mx-auto max-w-7xl flex flex-col-reverse items-center gap-12 px-4 py-12 sm:px-6 lg:grid lg:min-h-[calc(100vh-64px)] lg:grid-cols-2 lg:px-8 lg:py-0">
         <div className="max-w-xl text-center lg:text-left">
           <span className="inline-flex items-center rounded-full bg-surface px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground border border-border">
-            🌱 Sustainable Essentials
+            🌱 Everyday essentials
           </span>
 
           <h1 className="mt-6 text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl lg:text-6xl lg:leading-[1.1]">
@@ -17,9 +17,8 @@ export default function HeroSection() {
           </h1>
 
           <p className="mt-6 text-base leading-8 text-muted-foreground sm:text-lg">
-            Discover minimalist apparel made responsibly from premium,
-            eco-friendly materials. Our timeless wardrobe staples are engineered
-            for ultimate comfort, durability, and a flawless fit that lasts.
+            Find comfortable, simple clothing made with carefully chosen
+            materials. Easy pieces you can wear every day.
           </p>
 
           <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:justify-center lg:justify-start">

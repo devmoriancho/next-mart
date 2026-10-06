@@ -2,14 +2,23 @@ import { NextRequest, NextResponse } from "next/server";
 
 import Stripe from "stripe";
 import { prisma } from "@/lib/db";
+import {
+  OrderStatus,
+  PaymentMethod,
+  PaymentStatus,
+} from "@/generated/prisma/client";
+import { createOrder } from "@/server-actions/order/creatOrder";
 
 export async function POST(req: NextRequest) {
   const body = await req.text();
 
   const signature = req.headers.get("stripe-signature");
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
-  if (!signature) {
-    return new NextResponse("Missing stripe signature", { status: 400 });
+  if (!signature || !webhookSecret) {
+    return new NextResponse("Stripe webhook configuration is missing", {
+      status: 400,
+    });
   }
 
   let event: Stripe.Event;
@@ -18,7 +27,7 @@ export async function POST(req: NextRequest) {
     event = Stripe.webhooks.constructEvent(
       body,
       signature,
-      process.env.STRIPE_WEBHOOK_SECRET || "",
+      webhookSecret,
     );
   } catch (error) {
     const message =
@@ -30,33 +39,60 @@ export async function POST(req: NextRequest) {
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
 
-    const orderNumber = session.metadata?.orderNumber;
     const paymentIntentId =
       typeof session.payment_intent === "string"
         ? session.payment_intent
         : session.payment_intent?.id;
+    const metadata = session.metadata;
 
-    if (!orderNumber || !paymentIntentId) {
+    if (
+      !paymentIntentId ||
+      !metadata?.userId ||
+      !metadata.cartItems ||
+      !metadata.shippingAddress
+    ) {
       return new NextResponse(
-        "Webhook received but missing orderNumber in metadata",
+        "Webhook received with incomplete order metadata",
         { status: 400 },
       );
     }
 
     try {
-      await prisma.order.update({
-        where: { orderNumber: orderNumber },
-        data: {
-          paymentStatus: "PAID",
-          status: "PROCESSING",
-          stripePaymentIntentId: paymentIntentId,
-        },
+      const existingOrder = await prisma.order.findUnique({
+        where: { stripePaymentIntentId: paymentIntentId },
+        select: { orderNumber: true },
+      });
+
+      if (existingOrder) {
+        return new NextResponse("Webhook already processed", { status: 200 });
+      }
+
+      const cartItems = JSON.parse(metadata.cartItems);
+      const shippingAddress = JSON.parse(metadata.shippingAddress);
+
+      const result = await createOrder({
+        userId: metadata.userId,
+        paymentMethod: PaymentMethod.STRIPE,
+        paymentStatus: PaymentStatus.PAID,
+        status: OrderStatus.PROCESSING,
+        cartItems,
+        shippingAddress,
+        stripePaymentIntentId: paymentIntentId,
       });
 
       console.log(
-        `[STRIPE_WEBHOOK_SUCCESS]: Order ${orderNumber} updated to PAID and PROCESSING.`,
+        `[STRIPE_WEBHOOK_SUCCESS]: Order ${result.order?.orderNumber} created and marked PAID.`,
       );
     } catch (dbError) {
+      const existingOrder = await prisma.order.findUnique({
+        where: { stripePaymentIntentId: paymentIntentId },
+        select: { orderNumber: true },
+      });
+
+      if (existingOrder) {
+        return new NextResponse("Webhook already processed", { status: 200 });
+      }
+
       console.error(`[DATABASE_UPDATE_ERROR]:`, dbError);
       return new NextResponse("Internal database update failure", {
         status: 500,

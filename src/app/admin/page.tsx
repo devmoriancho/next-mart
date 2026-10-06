@@ -14,25 +14,25 @@ export default async function AdminDashboardPage() {
     {
       title: "Total Users",
       metricCount: stats.totalUsers,
-      description: "Registered customer profiles",
+      description: "Registered customers",
       icon: FiUsers,
     },
     {
       title: "Total Products",
       metricCount: stats.totalProducts,
-      description: "Active inventory tracking items",
+      description: "Products in your store",
       icon: FiBox,
     },
     {
       title: "Total Orders",
       metricCount: stats.totalOrders,
-      description: "Historical transaction logs",
+      description: "Orders placed",
       icon: FiClipboard,
     },
     {
       title: "Total Revenue",
       metricCount: `KES ${stats.totalRevenue.toLocaleString()}`,
-      description: "Gross earnings from verified purchases",
+      description: "Money from paid orders",
       icon: FiTrendingUp,
     },
   ];
@@ -44,8 +44,7 @@ export default async function AdminDashboardPage() {
           Dashboard Overview
         </h1>
         <p className="mt-1.5 text-sm font-medium text-muted-foreground">
-          Welcome back! Here is a live summary baseline of your platform
-          operations.
+          Welcome back! Here is a quick look at your store.
         </p>
       </div>
 

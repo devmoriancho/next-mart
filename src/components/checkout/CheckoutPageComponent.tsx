@@ -199,7 +199,7 @@ export default function CheckoutPageComponent() {
             </h1>
           </div>
           <div className="inline-flex items-center gap-2 rounded-xl bg-success/10 border border-success/20 px-4 py-2 text-xs font-bold uppercase tracking-wider text-success w-fit">
-            <FiLock size={14} /> Global Encryption Layer Enabled
+            <FiLock size={14} /> Secure checkout
           </div>
         </div>
 
@@ -356,12 +356,10 @@ export default function CheckoutPageComponent() {
                     <FiLock className="h-5 w-5 text-accent mt-0.5 shrink-0" />
                     <div>
                       <h4 className="text-sm font-bold text-foreground">
-                        Stripe Hosted Checkout
+                        Pay securely with Stripe
                       </h4>
                       <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
-                        Upon clicking confirm, you will be securely redirected
-                        to Stripe&apos;s payment network servers to input your
-                        bank details.
+                        You will be taken to Stripe to enter your card details.
                       </p>
                     </div>
                   </div>
@@ -374,7 +372,7 @@ export default function CheckoutPageComponent() {
                   >
                     {isSubmitting
                       ? "Redirecting to Stripe..."
-                      : "Proceed to Secure Card Payment"}
+                      : "Pay with card"}
                   </Button>
                 </div>
               )}

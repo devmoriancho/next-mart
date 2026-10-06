@@ -126,7 +126,7 @@ export default function EditProfileForm({ userProfile }: EditProfileFormProps) {
             <Input
               label="Shipping Delivery Phone"
               type="tel"
-              placeholder="Contact number for courier dispatch"
+              placeholder="Phone number for delivery"
               error={errors.addressPhone?.message}
               {...register("addressPhone")}
             />

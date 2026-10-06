@@ -21,9 +21,11 @@ export async function completeStripeOrder(sessionId: string) {
     return { success: false, message: "Missing Stripe checkout session." };
   }
 
+  let paymentIntentId: string | undefined;
+
   try {
     const session = await getStripe().checkout.sessions.retrieve(sessionId);
-    const paymentIntentId =
+    paymentIntentId =
       typeof session.payment_intent === "string"
         ? session.payment_intent
         : session.payment_intent?.id;
@@ -71,6 +73,17 @@ export async function completeStripeOrder(sessionId: string) {
       ? { success: true, orderNumber: result.order.orderNumber }
       : { success: false, message: "Unable to save the paid order." };
   } catch (error) {
+    if (paymentIntentId) {
+      const existingOrder = await prisma.order.findUnique({
+        where: { stripePaymentIntentId: paymentIntentId },
+        select: { orderNumber: true },
+      });
+
+      if (existingOrder) {
+        return { success: true, orderNumber: existingOrder.orderNumber };
+      }
+    }
+
     console.error("Stripe order completion failure:", error);
     return {
       success: false,
