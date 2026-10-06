@@ -145,7 +145,7 @@ export default function AdminProductsPage() {
                   </td>
 
                   <td className="px-6 py-4 text-xs font-bold text-foreground">
-                    \${product.price.toFixed(2)}
+                    ${product.price.toFixed(2)}
                   </td>
 
                   <td className="px-6 py-4 text-xs text-foreground">
