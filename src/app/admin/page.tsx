@@ -1,28 +1,39 @@
-"use client";
-
 import React from "react";
-import { FiUsers, FiBox, FiClipboard } from "react-icons/fi";
+import { FiUsers, FiBox, FiClipboard, FiTrendingUp } from "react-icons/fi";
 import AdminLayout from "@/components/layout/AdminLayout";
+import { getDashboardStats } from "@/server-actions/admin/getDashboardStats";
 
-export default function AdminDashboardPage() {
+export default async function AdminDashboardPage() {
+  const response = await getDashboardStats();
+  const stats =
+    response.success && response.data
+      ? response.data
+      : { totalUsers: 0, totalProducts: 0, totalOrders: 0, totalRevenue: 0 };
+
   const analyticsSummary = [
     {
       title: "Total Users",
-      metricCount: 3,
+      metricCount: stats.totalUsers,
       description: "Registered customer profiles",
       icon: FiUsers,
     },
     {
       title: "Total Products",
-      metricCount: 11,
+      metricCount: stats.totalProducts,
       description: "Active inventory tracking items",
       icon: FiBox,
     },
     {
       title: "Total Orders",
-      metricCount: 5,
-      description: "Historical transaction checkout logs",
+      metricCount: stats.totalOrders,
+      description: "Historical transaction logs",
       icon: FiClipboard,
+    },
+    {
+      title: "Total Revenue",
+      metricCount: `KES ${stats.totalRevenue.toLocaleString()}`,
+      description: "Gross earnings from verified purchases",
+      icon: FiTrendingUp,
     },
   ];
 
@@ -33,11 +44,12 @@ export default function AdminDashboardPage() {
           Dashboard Overview
         </h1>
         <p className="mt-1.5 text-sm font-medium text-muted-foreground">
-          Welcome back! Here is a summary baseline of your platform operations.
+          Welcome back! Here is a live summary baseline of your platform
+          operations.
         </p>
       </div>
 
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {analyticsSummary.map((cardData) => {
           const IconComponent = cardData.icon;
 
@@ -56,7 +68,7 @@ export default function AdminDashboardPage() {
               </div>
 
               <div className="mt-4">
-                <p className="text-3xl font-black tracking-tight text-foreground">
+                <p className="text-2xl font-black tracking-tight text-foreground sm:text-3xl">
                   {cardData.metricCount}
                 </p>
                 <p className="mt-1.5 text-xs font-medium text-muted-foreground">
