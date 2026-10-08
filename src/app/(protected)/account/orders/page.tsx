@@ -5,6 +5,8 @@ import FrontEndLayout from "@/components/layout/FrontEndLayout";
 import BreadCrumb from "@/components/ui/BreadCrumb";
 import { getOrders } from "@/server-actions/order/getOrders";
 
+export const dynamic = "force-dynamic";
+
 const statusStyles: Record<string, string> = {
   PAID: "bg-success/10 text-success border border-success/20",
   PENDING: "bg-warning/10 text-warning border border-warning/20",

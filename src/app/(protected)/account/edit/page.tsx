@@ -3,6 +3,8 @@ import FrontEndLayout from "@/components/layout/FrontEndLayout";
 import EditProfileForm from "@/components/user/EditProfileForm";
 import { getProfile } from "@/server-actions/user/getProfile";
 
+export const dynamic = "force-dynamic";
+
 export default async function EditProfilePage() {
   const userProfile = await getProfile();
 
@@ -18,8 +20,7 @@ export default async function EditProfilePage() {
             Edit Account Profile
           </h1>
           <p className="mt-1.5 text-sm font-medium text-muted-foreground">
-            Update your profile and default delivery address
-            coordinates.
+            Update your profile and default delivery address coordinates.
           </p>
         </div>
 

@@ -3,6 +3,8 @@ import AdminLayout from "@/components/layout/AdminLayout";
 import AdminOrdersList from "@/components/admin/AdminOrdersList";
 import { getAllOrders } from "@/server-actions/order/getAllOrders";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminOrdersPage() {
   const response = await getAllOrders();
   const orders = response.success && response.data ? response.data : [];

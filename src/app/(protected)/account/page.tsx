@@ -6,6 +6,8 @@ import FrontEndLayout from "@/components/layout/FrontEndLayout";
 import Button from "@/components/ui/Button";
 import { getProfile } from "@/server-actions/user/getProfile";
 
+export const dynamic = "force-dynamic";
+
 export default async function AccountPage() {
   const userProfile = await getProfile();
 
