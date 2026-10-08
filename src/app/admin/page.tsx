@@ -2,6 +2,7 @@ import React from "react";
 import { FiUsers, FiBox, FiClipboard, FiTrendingUp } from "react-icons/fi";
 import AdminLayout from "@/components/layout/AdminLayout";
 import { getDashboardStats } from "@/server-actions/admin/getDashboardStats";
+export const dynamic = "force-dynamic";
 
 export default async function AdminDashboardPage() {
   const response = await getDashboardStats();
